@@ -39,7 +39,7 @@ class CIndexController extends CController
 		CCReader::init(CConfig::$shmKey);
 		echo microtime()."<br/>";
 		CCReader::get("cfg.items.item1");
-		var_dump(CCReader::mget(["cfg.items.item1","cfg.items.item2","cfg.items.item41"]));
+		var_dump(CCReader::mget(array("cfg.items.item1","cfg.items.item2","cfg.items.item41")));
 		echo microtime()."<br/>";
 		$user = CMUser::model()->get('starjiang');
 		echo microtime()."<br/>";
@@ -116,7 +116,7 @@ class CIndexController extends CController
 		var_dump(CSFDBUser::model()->setKey('1002ff')->setHead('ad')->save());
 		var_dump(CSFDBUser::model()->get('1002'));
 		
-		var_dump(CSFDBUser::mget([1001,1002]));
+		var_dump(CSFDBUser::mget(array(1001,1002)));
 	}
 	
 	public function lbdbAction()
@@ -124,7 +124,7 @@ class CIndexController extends CController
 		var_dump(CLBDBUser::model()->setKey('1004')->setHead('ad')->save());
 		var_dump(CLBDBUser::model()->get('1004'));
 	
-		var_dump(CLBDBUser::mget([1001,1002,1003,1004,1005]));
+		var_dump(CLBDBUser::mget(array(1001,1002,1003,1004,1005)));
 	}
 		
 	public function lbmongoAction()
@@ -132,7 +132,7 @@ class CIndexController extends CController
 		var_dump(CLBMGUser::model()->setKey('1005')->setHead('ad')->save());
 		//var_dump(CLBMGUser::model()->get('1004'));
 	
-		var_dump(CLBMGUser::mget([1001,1002,1003,'1004','1005']));
+		var_dump(CLBMGUser::mget(array(1001,1002,1003,'1004','1005')));
 	}
 	
 	public function trAction()
@@ -140,6 +140,6 @@ class CIndexController extends CController
 		//var_dump(CTRUser::model()->setKey('1004')->setHead('ad')->save());
 		//var_dump(CTRUser::model()->get('1007'));
 	
-		var_dump(CTRUser::mget([1001,1002,1003,'1004','1005',1007]));
+		var_dump(CTRUser::mget(array(1001,1002,1003,'1004','1005',1007)));
 	}
 }
