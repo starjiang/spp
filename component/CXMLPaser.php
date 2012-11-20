@@ -5,16 +5,9 @@ class CXMLPaser
 	private $shmHashMap = null;
 	private $data = array();
 	private $xml = null;
-	private $buckets = 12281 ; 
 	private $childnum = 0 ;
-	
-	/*
-	 2909,     3881,     5179,
-     6907,     9209,    12281,    
-     16381,    21841,    29123,    
-     38833,    51787,     69061
-    */
-	
+	private $primes = array(12281,16381,21841,29123,38833,51787,69061,92083,122777,163729,218357,291143,388211,517619);
+		
 	public function init($file)
 	{
 		$this->xml = simplexml_load_file($file);
@@ -25,6 +18,21 @@ class CXMLPaser
 		}
 		
 		return true;
+	}
+	
+	private function getBucketsNum()
+	{
+		$childNum = $this->countChild($this->xml);
+		$buckets = 0;
+		foreach($this->primes as $prime)
+		{
+			$buckets = $prime;
+			if($prime > $childNum)
+			{
+				break;
+			}
+		}
+		return $buckets;
 	}
 	
 	private function countChild($e)
@@ -40,13 +48,22 @@ class CXMLPaser
 	}
 	
 	
-	public function toShm($shmKey,$size = 10000000)
+	public function toShm($shmMKey,$shmSKey,$size = 10000000)
 	{
 		if($this->shmHashMap === null)
 		{
 			$this->shmHashMap = new CShmHashMap();
 		}
-		if(!$this->shmHashMap->create($shmKey,$this->buckets,$size))
+		if(!$this->shmHashMap->create($shmSKey,$this->getBucketsNum(),$size))
+		{
+			return false;
+		}
+		
+		$this->decode($this->xml,true);
+		
+		$this->shmHashMap = new CShmHashMap();
+		
+		if(!$this->shmHashMap->create($shmMKey,$this->getBucketsNum(),$size))
 		{
 			return false;
 		}

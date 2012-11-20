@@ -6,23 +6,36 @@ include SPP_PATH.'base/CSpp.php';
 include APP_PATH.'config/CConfig.php';
 CSpp::getInstance()->init();
 
-if(count($argv) < 3)
+if(count($argv) < 4)
 {
-	echo "usage:".$argv[0]." xml shmkey\n";
+	echo "usage:".$argv[0]." xml shmMKey shmSKey\n";
 	return;	
 }
 
 $filename = $argv[1];
-$shmKey = (int)$argv[2];
+$shmMKey = (int)$argv[2];
+$shmSKey = (int)$argv[3];
 
-if($shmKey == 0)
+if($shmMKey == 0)
 {
-	$shmKey = hexdec($argv[2]);
+	$shmMKey = hexdec($argv[2]);
 }
 
-if($shmKey == 0)
+if($shmMKey == 0)
 {
-	echo "shmkey is 0\n";
+	echo "shmMkey is 0\n";
+	return;
+}
+
+
+if($shmSKey == 0)
+{
+	$shmSKey = hexdec($argv[3]);
+}
+
+if($shmSKey == 0)
+{
+	echo "shmSkey is 0\n";
 	return;
 }
 
@@ -33,7 +46,7 @@ if(!$paser->init($filename))
 	return;
 }
 
-if(!$paser->toShm($shmKey))
+if(!$paser->toShm($shmMKey,$shmSKey))
 {
 	echo "load to shm fail\n";
 	return;

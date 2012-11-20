@@ -9,8 +9,8 @@ class CConfig
 	public static $tpl = ['path' => '../app/template'];
 	public static $log = ['path'=>'../app/logs/' , 'level' => 15];
 	
-	public static $shmKey = 0x1111;
-	
+	public static $shmMKey = 0x1111;
+	public static $shmSKey = 0x2222;
 	
 	
 }

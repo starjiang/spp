@@ -4,7 +4,7 @@ class CIndexController extends CController
 
 	public function before()
 	{
-		CCReader::init(CConfig::$shmKey);
+		CCReader::init(CConfig::$shmMKey,CConfig::$shmSKey);
 	}
 	
 	public function indexAction()
@@ -110,5 +110,36 @@ class CIndexController extends CController
 		var_dump(CDBUser::model()->setKey('1001')->setHead('adadads')->save());
 		var_dump(CDBUser::model()->get('1001'));
 	}
+	
+	public function sfdbAction()
+	{
+		var_dump(CSFDBUser::model()->setKey('1002ff')->setHead('ad')->save());
+		var_dump(CSFDBUser::model()->get('1002'));
 		
+		var_dump(CSFDBUser::mget([1001,1002]));
+	}
+	
+	public function lbdbAction()
+	{
+		var_dump(CLBDBUser::model()->setKey('1004')->setHead('ad')->save());
+		var_dump(CLBDBUser::model()->get('1004'));
+	
+		var_dump(CLBDBUser::mget([1001,1002,1003,1004,1005]));
+	}
+		
+	public function lbmongoAction()
+	{
+		var_dump(CLBMGUser::model()->setKey('1005')->setHead('ad')->save());
+		//var_dump(CLBMGUser::model()->get('1004'));
+	
+		var_dump(CLBMGUser::mget([1001,1002,1003,'1004','1005']));
+	}
+	
+	public function trAction()
+	{
+		//var_dump(CTRUser::model()->setKey('1004')->setHead('ad')->save());
+		//var_dump(CTRUser::model()->get('1007'));
+	
+		var_dump(CTRUser::mget([1001,1002,1003,'1004','1005',1007]));
+	}
 }

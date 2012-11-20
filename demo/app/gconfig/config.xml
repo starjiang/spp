@@ -15,10 +15,19 @@
 	<item5 name="tick" head='xxxx' birth="2012-01-23"/>
 </items>
 
+<rooms>
+	<R1001 num='5' small="50" large="500" />
+	<R1002 num='5' small="50" large="500" />
+	<R1003 num='5' small="50" large="500" />
+	<R1004 num='5' small="50" large="500" />
+</rooms>
 <services>
 	<db>
 		<CDBUser host="127.0.0.1" port="3306" user="fanqu" pwd="vanchu2010" db="test" rhosts="127.0.0.1" rports="3306" rusers="fanqu" rpwds="vanchu2010" rdbs="test" />
-		<CDBUser1 host="127.0.0.1" port="3306" db="test"/>
+		<CDBUser1 host="127.0.0.1" port="3306" user="fanqu" pwd="vanchu2010" db="test"/>
+		<CSFDBUser host="127.0.0.1" port="3306" user="fanqu" pwd="vanchu2010" db="test"/>
+		<CLBDBUser hosts="127.0.0.1,127.0.0.1" ports="3306,3306" users="fanqu,fanqu" pwds="vanchu2010,vanchu2010" dbs="test,test" />
+		
 	</db>
 	<mem>
 		<CMUser hosts="127.0.0.1,127.0.0.1" ports="11211,11211" persist="1" source="CDBUser" />
@@ -26,6 +35,8 @@
 	</mem>
 	<mongo>
 		<CMGUser host="127.0.0.1" port="27017" db='zjhdb' rhosts='127.0.0.1,127.0.0.1' rports='27017,27017' rdbs='zjhdb,zjhdb' />
+		<CLBMGUser hosts='127.0.0.1,127.0.0.1' ports='27017,27017' dbs='zjhdb,zjhdb1' />
+	
 	</mongo>
 	<redis>
 		<CRUser host="127.0.0.1" port="6379" />

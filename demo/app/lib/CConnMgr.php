@@ -44,6 +44,29 @@ class CConnMgr
 		return $this->getPdo($info['host'],$info['port'],$info['db'],$info['user'],$info['pwd']);
 	}	
 	
+	public function pdos($model)
+	{
+		$info = CCReader::get('cfg.services.db.'.$model);
+		if($info ==false)
+		{
+			return null;
+		}
+		$arhosts = explode(',',$info['hosts']);
+		$arports = explode(',', $info['ports']);
+		$arusers = explode(',', $info['users']);
+		$arpwds = explode(',', $info['pwds']);
+		$ardbs = explode(',', $info['dbs']);
+		$len = count($arhosts);
+		
+		$rpdos  = array();
+		
+		for($i=0;$i<$len;$i++)
+		{
+			$rpdos[] = $this->getPdo($arhosts[$i],$arports[$i],$ardbs[$i],$arusers[$i],$arpwds[$i]);
+		}
+		return $rpdos;
+	}
+	
 	public function rpdos($model)
 	{
 		$info = CCReader::get('cfg.services.db.'.$model);
@@ -110,6 +133,27 @@ class CConnMgr
 		for($i=0;$i<$len;$i++)
 		{
 			$rmongos[] = $this->getMongo($arhosts[$i],$arports[$i],$ardbs[$i]);
+		}
+		return $rmongos;
+	}
+	
+	public function mongos($model)
+	{
+		$info = CCReader::get('cfg.services.mongo.'.$model);
+		if($info ==false)
+		{
+			return null;
+		}
+		$arhosts = explode(',',$info['hosts']);
+		$arports = explode(',', $info['ports']);
+		$ardbs = explode(',', $info['dbs']);
+		$len = count($arhosts);
+	
+		$rmongos  = array();
+	
+		for($i=0;$i<$len;$i++)
+		{
+		$rmongos[] = $this->getMongo($arhosts[$i],$arports[$i],$ardbs[$i]);
 		}
 		return $rmongos;
 	}

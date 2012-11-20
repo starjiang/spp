@@ -18,6 +18,7 @@ abstract class CModel
 	public function setDirty($flag)
 	{
 		$this->dirty = $flag;
+		return $this;
 	}
 	
 	protected  function keyName()
