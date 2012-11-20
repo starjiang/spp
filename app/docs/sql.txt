@@ -1,0 +1,2 @@
+create table user (`id` int(11) not null default '0',val text(5000000) not null,primary key (`id`) ) engine=innodb default charset=utf8;
+

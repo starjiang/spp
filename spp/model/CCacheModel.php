@@ -54,7 +54,7 @@ abstract class CCacheModel extends CModel
 			{
 				if($this->delayWrite()) //缓写支持
 				{
-					if($this->modifyList()) return $this->modifyList()->push($nskey);
+					if($this->modifyList()) return $this->modifyList()->push($this->$keyName);
 				}
 				else
 				{
