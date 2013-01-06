@@ -1,7 +1,7 @@
 <?php
 class CUser extends CMongoModel
 {
-	private $fields = array('_id','nick','head','score','coins','xp','pwd');
+	private $fields = array('_id'=>'','nick'=>'','head'=>'','score'=>0,'coins'=>0,'xp'=>0,'pwd'=>'');
 	private static $mongodb = null;
 	private static $rmongodbs = null;
 	

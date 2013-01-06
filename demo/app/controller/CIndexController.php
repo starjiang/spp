@@ -56,6 +56,14 @@ class CIndexController extends CController
 		
 	}
 	
+	public function aAction()
+	{
+		$user=CMUser::model()->get('1');
+		print_r($user);
+		$user->setKey('2')->setName('xxxxxxxxxxxxxxx');
+		print_r($user);
+		echo $user2 = CMUser::model()->getId();
+	}
 	
 	public function mongoAction()
 	{

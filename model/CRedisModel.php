@@ -38,7 +38,7 @@ class CRedisModel extends CModel
 		
 		if($var !== false)
 		{
-			$this->fromArray(json_decode($var,true));
+			$this->fromArray(json_decode($var,true))->setDirty(false);
 			return $this;
 		}
 		
@@ -70,7 +70,7 @@ class CRedisModel extends CModel
 		
 		foreach ($vars as $key =>$var)
 		{
-			$objs[$nsKeys[$key]]->fromArray(json_decode($var,true));
+			$objs[$nsKeys[$key]]->fromArray(json_decode($var,true))->setDirty(false);
 			unset($nsKeys[$key]);
 		}
 		

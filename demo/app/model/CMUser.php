@@ -1,7 +1,7 @@
 <?php
 class CMUser extends CCacheModel
 {
-	private $fields = array('id','name','head');
+	private $fields = array('id'=>0,'name'=>'','head'=>'');
 	private static $cache = null;
 	private static $source = null;
 	private static $modifyList = null;

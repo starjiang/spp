@@ -9,7 +9,7 @@ class CRedisModifyList implements IModifyList
 	{
 		$this->redis = $redis;
 		$this->prefix = $prefix;
-		$this->$bucketNum = $bucketNum;
+		$this->bucketNum = $bucketNum;
 	}
 	
 	public function push($value)

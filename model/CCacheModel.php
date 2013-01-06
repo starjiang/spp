@@ -70,12 +70,12 @@ abstract class CCacheModel extends CModel
 	public function get($key)
 	{
 		$this->setKey($key);
-		
+				
 		$var = $this->cache()->get($this->getKey());
 
 		if($var !== false)
 		{
-			$this->fromArray(json_decode($var,true));
+			$this->fromArray(json_decode($var,true))->setDirty(false);
 			return $this;
 		}
 		else
@@ -85,13 +85,14 @@ abstract class CCacheModel extends CModel
 				$var = $this->source()->get($key);
 				if($var !== false)
 				{
-					$this->fromArray($var);
-					var_dump($this->cache()->set($this->getKey(),json_encode($var)));
+					$this->fromArray($var)->setDirty(false);
+					$this->cache()->set($this->getKey(),json_encode($var));
 					return $this;
 				}
+				$this->setDirty(false);
 				return false;
 			}
-			
+			$this->setDirty(false);
 			return false;
 		}
 	}
@@ -119,7 +120,8 @@ abstract class CCacheModel extends CModel
 			
 			foreach ($vars as $key =>$var)
 			{
-				$objs[$nsKeys[$key]]->fromArray(json_decode($var,true));
+				$objs[$nsKeys[$key]]->fromArray(json_decode($var,true))->setDirty(false);
+				
 				unset($nsKeys[$key]);
 			}
 
@@ -136,7 +138,7 @@ abstract class CCacheModel extends CModel
 					
 						foreach ($vars as $key =>$var)
 						{
-							$objs[$key]->fromArray($var);
+							$objs[$key]->fromArray($var)->setDirty(false);
 							$callerObj->cache()->set($objs[$key]->getKey(),json_encode($var));//写回memcached
 							unset($nsKeys[$objs[$key]->getKey()]);
 						}

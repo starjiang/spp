@@ -11,9 +11,14 @@ abstract class CModel
 		return $this->dirty;
 	}
 	
+	public function setDirty($flag)
+	{
+		$this->dirty = $flag;
+	}
+	
 	protected  function keyName()
 	{
-		$keys = $this->fields();
+		$keys = array_keys($this->fields());
 		return $keys[0];
 	}
 	
@@ -21,6 +26,7 @@ abstract class CModel
 	{
 		$keyName = $this->keyName();
 		$this->$keyName = $key;
+		$this->dirty = true;
 		return $this;
 	}
 	
@@ -28,15 +34,17 @@ abstract class CModel
 	{
 		if( is_array($infos) || is_object($infos))
 		{
-			foreach($infos as $key => $val)
+			$fields = $this->fields();
+			
+			foreach($fields as $key => $var)
 			{
-				$fields = $this->fields();
-				if(array_search($key,$fields)!==FALSE)
+				if($infos[$key] !== null)
 				{
-					$this->$key = $val;
+					$this->$key = $infos[$key];
 				}
 			}
 		}
+
 		return $this;
 	}
 
@@ -46,12 +54,12 @@ abstract class CModel
 		$fields = $this->fields();
 		$keyName = $this->keyName();
 		
-		if($this->$keyName == null )
+		if($this->$keyName == null || $this->$keyName == '' )
 		{
 			throw new ErrorException('primay key field '.$this->$keyName.' is not set in '.get_class($this));
 		}
 		
-		foreach($fields as $key)
+		foreach($fields as $key => $var)
 		{
 			$infos[$key] = $this->$key;
 		}
@@ -65,30 +73,18 @@ abstract class CModel
 		{
 			$field = substr($m,3);
 			$field[0]=strtolower($field[0]);
-			
-			if(array_search($field,$this->fields())!==FALSE)
-			{
-				return $this->$field;
-			}
-			else
-			{
-				throw new ErrorException('can not find field '.$field.' in '.get_class($this));
-			}
-			
+			return $this->$field;
 		}
 		else if ($do == 'set')
 		{
 			$field = substr($m,3);
 			$field[0]=strtolower($field[0]);
-			if(array_search($field,$this->fields())!==FALSE)
+			if($this->$field !==  $a[0])
 			{
 				$this->$field = $a[0];
-				return $this;
+				$this->dirty = true;
 			}
-			else
-			{
-				throw new ErrorException('can not find field '.$field.' in '.get_class($this));
-			}
+			return $this;
 		}
 		else
 		{
@@ -96,10 +92,17 @@ abstract class CModel
 		}
 	}
 	
+
 	public function __get($field)
 	{
-		if(array_search($field,$this->fields())!==FALSE)
+		if(array_key_exists($field,$this->fields()))
 		{
+			
+			if($this->$field === null)
+			{
+				$fields = $this->fields();
+				$this->$field = $fields[$field];
+			}
 			return $this->$field;
 		}
 		else
@@ -111,14 +114,13 @@ abstract class CModel
 
 	public function __set($field, $value)
 	{
-		if(array_search($field,$this->fields())!==FALSE)
+		if(array_key_exists($field,$this->fields()))
 		{
-			if($this->$field != $value)
+			if($this->$field !== $value)
 			{
 				$this->$field = $value;
 				$this->dirty = true;
 			}
-
 		}
 		else
 		{
@@ -128,6 +130,7 @@ abstract class CModel
 
 	}
 
+	
 	public static function model()
 	{
 		$caller = get_called_class();

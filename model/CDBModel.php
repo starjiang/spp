@@ -22,14 +22,15 @@ abstract class CDBModel extends CModel
 	
 	private function getFeildsList1()
 	{
-		$list = implode(',', $this->fields());
+		
+		$list = implode(',', array_keys($this->fields()));
 		return $list;
 	}
 	
 	private function getFeildsList2()
 	{
 		$keys=array();
-		$fields = $this->fields();
+		$fields = array_keys($this->fields());
 		foreach ($fields as $key)
 		{
 			$keys[]=':'.$key;
@@ -93,6 +94,13 @@ abstract class CDBModel extends CModel
 		}
 				
 		$sth = $pdo->prepare('select * from '.$this->prefix().' where '.$this->keyName().' = :id');
+		
+		if(!$sth)
+		{
+			$error=$pdo->errorInfo();
+			throw new ErrorException($error[2]);
+		}
+		
 		if($sth->execute(array('id'=>$key)) === false)
 		{
 			$error=$sth->errorInfo();
@@ -102,7 +110,7 @@ abstract class CDBModel extends CModel
 		
 		if(is_array($row))
 		{
-			$this->fromArray($row);
+			$this->fromArray($row)->setDirty(false);
 			return $this;
 		}
 		return false;
@@ -151,7 +159,7 @@ abstract class CDBModel extends CModel
 			{
 				$obj = new $caller();
 
-				$obj->fromArray($result);
+				$obj->fromArray($result)->setDirty(false);
 			
 				$objs[$result[$obj->keyName()]] = $obj;
 			}
@@ -203,7 +211,7 @@ abstract class CDBModel extends CModel
 			{
 				$obj = new $caller();
 		
-				$obj->fromArray($result);
+				$obj->fromArray($result)->setDirty(false);
 					
 				$objs[$result[$obj->keyName()]] = $obj;
 			}

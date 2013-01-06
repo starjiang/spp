@@ -52,7 +52,7 @@ abstract class CMongoModel extends CModel
 		 }
 		 else
 		 {
-		 	$this->fromArray($var);
+		 	$this->fromArray($var)->setDirty(false);
 		 	return $this;
 		 }
 
@@ -86,7 +86,7 @@ abstract class CMongoModel extends CModel
 		{
 			$obj=new $caller();
 			$obj->setKey($result['_id']);
-			$obj->fromArray($result);
+			$obj->fromArray($result)->setDirty(false);
 			$objs[$result['_id']] = $obj;
 		}
 		return $objs;
@@ -128,7 +128,7 @@ abstract class CMongoModel extends CModel
 		{
 			$obj=new $caller();
 			$obj->setKey($result['_id']);
-			$obj->fromArray($result);
+			$obj->fromArray($result)->setDirty(false);
 			$objs[$result['_id']] = $obj;
 		}
 		return $objs;
