@@ -34,14 +34,10 @@ abstract class CModel
 	{
 		if( is_array($infos) || is_object($infos))
 		{
-			$fields = $this->fields();
 			
-			foreach($fields as $key => $var)
+			foreach($infos as $key => $var)
 			{
-				if($infos[$key] !== null)
-				{
-					$this->$key = $infos[$key];
-				}
+				$this->$key = $var;
 			}
 		}
 

@@ -1,7 +1,7 @@
 <?php
 class CDBUser extends CDBModel
 {
-	private $fields = array('id','name','head');
+	private $fields = array('id'=>0,'name'=>'','head'=>'');
 	private static $pdo = null;
 	
 	protected  function prefix()
