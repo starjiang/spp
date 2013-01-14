@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfg>
+<events>
+	<Event1 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
+	<Event2 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
+	<Event3 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
+	<Event4 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
+	<Event5 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
+</events>
+<items>
+	<item1 name="tick" head='xxxx' birth="2012-01-23"/>
+	<item2 name="tick" head='xxxx' birth="2012-01-23"/>
+	<item3 name="tick" head='xxxx' birth="2012-01-23"/>
+	<item4 name="tick" head='xxxx' birth="2012-01-23"/>
+	<item5 name="tick" head='xxxx' birth="2012-01-23"/>
+</items>
+
+<sys>
+	<host>127.0.0.1</host>
+	<port>808011</port>
+	<xxx>bcddsadsdsa</xxx>
+	<info id="xxxxxsaddssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss" name="sssssssssssssssssssdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"></info>
+</sys>
+</cfg>

@@ -187,6 +187,9 @@ abstract class CDBModel extends CModel
 		{
 			$pdo = $callerObj->pdo();
 		}
+
+		
+		$sth = $pdo->prepare("select * from ".$callerObj->prefix().$where);
 		
 		if(!$sth)
 		{
@@ -194,8 +197,6 @@ abstract class CDBModel extends CModel
 			throw new ErrorException($error[2]);
 		}
 		
-		$sth = $pdo->prepare("select * from ".$callerObj->prefix().$where);
-			
 		if($sth->execute() === false)
 		{
 			$error=$sth->errorInfo();

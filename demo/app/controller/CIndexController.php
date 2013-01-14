@@ -58,11 +58,18 @@ class CIndexController extends CController
 	
 	public function aAction()
 	{
-		$user=CMUser::model()->get('1');
-		print_r($user);
-		$user->setKey('2')->setName('xxxxxxxxxxxxxxx');
-		print_r($user);
-		echo $user2 = CMUser::model()->getId();
+		//$paser = new CXMLPaser;
+		//$paser->init('test.xml');
+		//var_dump($paser->toArray());
+		//$paser->toShm(0x1111);
+		CCReader::init(0x1111);
+		var_dump(CCReader::get("cfg"));
+		var_dump(CCReader::get("cfg.items"));
+		var_dump(CCReader::get("cfg.sys.host"));
+		var_dump(CCReader::get("cfg.sys.port"));
+		var_dump(CCReader::get("cfg.sys.info"));
+		var_dump(CCReader::get("cfg.items.item1"));
+		var_dump(CCReader::get("cfg.events.Event1"));
 	}
 	
 	public function mongoAction()
