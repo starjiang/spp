@@ -1,5 +1,5 @@
 <?php
-class CMUser extends CCacheModel
+class CMUser1 extends CCacheModel
 {
 	public static $fields = array('id'=>0,'name'=>'','head'=>'');
 	private static $cache = null;

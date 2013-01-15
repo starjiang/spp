@@ -1,10 +1,14 @@
 <?php
 abstract class CModel
 {
-
 	private $dirty = false;
+	private $keyName = null;
 	
-	abstract protected  function fields();
+	protected  function fields()
+	{
+		$caller = get_called_class();
+		return $caller::$fields;
+	}
 	
 	public function isDirty()
 	{
@@ -18,8 +22,12 @@ abstract class CModel
 	
 	protected  function keyName()
 	{
-		$keys = array_keys($this->fields());
-		return $keys[0];
+		if($this->keyName == null)
+		{
+			$keys= array_keys($this->fields());
+			$this->keyName = $keys[0];
+		}
+		return $this->keyName;
 	}
 	
 	public function setKey($key)
@@ -28,6 +36,12 @@ abstract class CModel
 		$this->$keyName = $key;
 		$this->dirty = true;
 		return $this;
+	}
+	
+	public function getKey()
+	{
+		$keyName = $this->keyName();
+		return $this->$keyName;
 	}
 	
 	public function fromArray($infos = null)

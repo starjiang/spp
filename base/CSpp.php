@@ -24,6 +24,7 @@ class CSpp
 	
 	public function init()
 	{
+
 		CRuntime::init(); //初始化
 		
 		//初始化log
@@ -38,7 +39,7 @@ class CSpp
 		{
 			if(isset(CConfig::$log) && isset(CConfig::$log['path']) && isset(CConfig::$log['level']))
 			{
-				$this->logHandler= new CLogFileHandler(CConfig::$log['path'].'run.log');
+				$this->logHandler= new CLogFileHandler(CConfig::$log['path'].date('Y-m-d').'.log');
 				$this->log = new CLog($this->logHandler,CConfig::$log['level']);
 			}
 		}

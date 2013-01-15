@@ -1,9 +1,9 @@
 <?php
 class CDBUser extends CDBModel
 {
-	private $fields = array('id'=>0,'name'=>'','head'=>'');
+	public static $fields = array('id'=>0,'name'=>'','head'=>'');
 	private static $pdo = null;
-	
+	private static $rpdos = null;
 	protected  function prefix()
 	{
 		return 'user';
@@ -13,16 +13,17 @@ class CDBUser extends CDBModel
 	{
 		if(self::$pdo == null)
 		{
-			$pdo = new PDO('mysql:dbname=test;host=127.0.0.1','fanqu','vanchu2010');
-			self::$pdo = $pdo;
+			self::$pdo = CConnMgr::init()->pdo(get_class($this));
 		}
 		return self::$pdo;
 	}
 	
-		
-	protected function fields()
+	protected function rpdos()
 	{
-		return $this->fields;
+		if(self::$rpdos == null)
+		{
+			self::$rpdos = CConnMgr::init()->rpdos(get_class($this));
+		}
+		return self::$rpdos;
 	}
-	
 }

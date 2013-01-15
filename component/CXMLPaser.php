@@ -5,6 +5,15 @@ class CXMLPaser
 	private $shmHashMap = null;
 	private $data = array();
 	private $xml = null;
+	private $buckets = 12281 ; 
+	private $childnum = 0 ;
+	
+	/*
+	 2909,     3881,     5179,
+     6907,     9209,    12281,    
+     16381,    21841,    29123,    
+     38833,    51787,     69061
+    */
 	
 	public function init($file)
 	{
@@ -14,8 +23,22 @@ class CXMLPaser
 		{
 			return false;
 		}
+		
 		return true;
 	}
+	
+	private function countChild($e)
+	{
+		if($e->count())
+		{
+			$this->childnum += $e->count(); 
+			foreach($e as $child)
+			{
+				$this->countChild($child);
+			}
+		}
+	}
+	
 	
 	public function toShm($shmKey,$size = 10000000)
 	{
@@ -23,8 +46,7 @@ class CXMLPaser
 		{
 			$this->shmHashMap = new CShmHashMap();
 		}
-		
-		if(!$this->shmHashMap->init($shmKey,$size))
+		if(!$this->shmHashMap->create($shmKey,$this->buckets,$size))
 		{
 			return false;
 		}

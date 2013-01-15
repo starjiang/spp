@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<db>
+		<CDBUser host="127.0.0.1" port="3306" user="fanqu" pwd="vanchu2010" db="test" rhosts="127.0.0.1" rports="3306" rusers="fanqu" rpwds="vanchu2010" rdbs="test" />
+		<CDBUser1 host="127.0.0.1" port="3306" db="test"/>
+	</db>
+	<mem>
+		<CMUser hosts="127.0.0.1,127.0.0.1" ports="11211,11211" persist="1" source="CDBUser" />
+		<CMUser1 hosts="127.0.0.1,127.0.0.1" ports="11211,11211" />
+	</mem>
+	<mongo>
+		<CMGUser host="127.0.0.1" port="27017" db='zjhdb' rhosts='127.0.0.1,127.0.0.1' rports='27017,27017' rdbs='zjhdb,zjhdb' />
+	</mongo>
+	<redis>
+		<CRUser host="127.0.0.1" port="6379" />
+	</redis>
+</services>

@@ -1,5 +1,5 @@
 <?php
-class CRedisModel extends CModel
+abstract class CRedisModel extends CModel
 {
 	abstract protected  function redis();
 	
@@ -8,7 +8,7 @@ class CRedisModel extends CModel
 		return strtolower(get_class($this));
 	}
 
-	public  function getKey()
+	public  function getNKey()
 	{
 		$keyName = $this->keyName();
 	
@@ -24,7 +24,7 @@ class CRedisModel extends CModel
 	public function save()
 	{
 		$keyName=$this->keyName();
-		$nskey = $this->getKey();
+		$nskey = $this->getNKey();
 		$var = $this->toArray();
 		$collection = $this->prefix();
 		return $this->redis()->set($nskey,json_encode($var));
@@ -34,7 +34,7 @@ class CRedisModel extends CModel
 	public function get($key)
 	{
 		$this->setKey($key);
-		$var = $this->redis()->get($this->getKey());
+		$var = $this->redis()->get($this->getNKey());
 		
 		if($var !== false)
 		{
@@ -63,7 +63,7 @@ class CRedisModel extends CModel
 			$obj=new $caller();
 			$obj->setKey($keys[$i]);
 			$objs[$keys[$i]] = $obj;
-			$nsKeys[$obj->getKey()]=$keys[$i];
+			$nsKeys[$obj->getNKey()]=$keys[$i];
 		}
 		
 		$vars = $callerObj->redis()->getMultiple(array_keys($nsKeys));

@@ -29,7 +29,7 @@ abstract class CCacheModel extends CModel
 		return null;
 	}
 	
-	public  function getKey()
+	public  function getNKey()
 	{
 		$keyName = $this->keyName();
 	
@@ -45,7 +45,7 @@ abstract class CCacheModel extends CModel
 	public function save()
 	{
 		$keyName=$this->keyName();
-		$nskey = $this->getKey();
+		$nskey = $this->getNKey();
 		$val = $this->toArray();
 		
 		if($this->cache()->set($nskey,json_encode($val)) === true)
@@ -71,7 +71,7 @@ abstract class CCacheModel extends CModel
 	{
 		$this->setKey($key);
 				
-		$var = $this->cache()->get($this->getKey());
+		$var = $this->cache()->get($this->getNKey());
 
 		if($var !== false)
 		{
@@ -86,7 +86,7 @@ abstract class CCacheModel extends CModel
 				if($var !== false)
 				{
 					$this->fromArray($var)->setDirty(false);
-					$this->cache()->set($this->getKey(),json_encode($var));
+					$this->cache()->set($this->getNKey(),json_encode($var));
 					return $this;
 				}
 				$this->setDirty(false);
@@ -110,7 +110,7 @@ abstract class CCacheModel extends CModel
 			$obj=new $caller();
 			$obj->setKey($keys[$i]);
 			$objs[$keys[$i]] = $obj;
-			$nsKeys[$obj->getKey()]=$keys[$i];
+			$nsKeys[$obj->getNKey()]=$keys[$i];
 		}
 		
 		$vars = $callerObj->cache()->get(array_keys($nsKeys));
@@ -139,8 +139,8 @@ abstract class CCacheModel extends CModel
 						foreach ($vars as $key =>$var)
 						{
 							$objs[$key]->fromArray($var)->setDirty(false);
-							$callerObj->cache()->set($objs[$key]->getKey(),json_encode($var));//写回memcached
-							unset($nsKeys[$objs[$key]->getKey()]);
+							$callerObj->cache()->set($objs[$key]->getNKey(),json_encode($var));//写回memcached
+							unset($nsKeys[$objs[$key]->getNKey()]);
 						}
 					}
 				}
@@ -170,7 +170,7 @@ abstract class CCacheModel extends CModel
 					foreach ($vars as $key =>$var)
 					{
 						$objs[$key]->fromArray($var);
-						$callerObj->cache()->set($objs[$key]->getKey(),json_encode($var));//写回memcached
+						$callerObj->cache()->set($objs[$key]->getNKey(),json_encode($var));//写回memcached
 					}
 					$diffKeys=array_diff($keys,array_keys($vars));
 					foreach($diffKeys as $key)
@@ -188,7 +188,7 @@ abstract class CCacheModel extends CModel
 	{
 		$this->setKey($key);
 		
-		if($this->cache()->delete($this->getKey()))
+		if($this->cache()->delete($this->getNKey()))
 		{
 			if($this->persist())
 			{

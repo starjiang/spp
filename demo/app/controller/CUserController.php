@@ -1,6 +1,10 @@
 <?php
 class CUserController extends CController
 {
+	public function before()
+	{
+		CCReader::init(CConfig::$shmKey);
+	}
 	public function regAction()	
 	{
 		$ret = array();
@@ -27,7 +31,7 @@ class CUserController extends CController
 			return;
 		}
 		
-		if(CUser::model()->get($name) !== false)
+		if(CMGUser::model()->get($name) !== false)
 		{
 			$ret['ret'] = 3;
 			$ret['msg'] = 'name have register';
@@ -35,7 +39,7 @@ class CUserController extends CController
 			return;
 		}
 		
-		if(!CUser::model()->setKey($name)->setNick($nick)->setPwd($pwd1)->save())
+		if(!CMGUser::model()->setKey($name)->setNick($nick)->setPwd($pwd1)->save())
 		{
 			$ret['ret'] = 4;
 			$ret['msg'] = 'system error';
@@ -63,7 +67,7 @@ class CUserController extends CController
 			return;
 		}
 		
-		$user = CUser::model()->get($name);
+		$user = CMGUser::model()->get($name);
 		
 		if($user=== false)
 		{
@@ -99,7 +103,7 @@ class CUserController extends CController
 			return;
 		}
 		
-		$user = CUser::model()->get($name);
+		$user = CMGUser::model()->get($name);
 		
 		if($user=== false)
 		{
