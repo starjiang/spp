@@ -157,6 +157,7 @@ class CRuntime
 		}
 		
 		ini_set('date.timezone','Asia/Shanghai');
+		ini_set('short_open_tag',1);
 		
 		$path[] = SPP_PATH."/model";
 		$path[] = SPP_PATH."/model/cache";
