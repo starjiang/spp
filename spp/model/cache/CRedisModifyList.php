@@ -21,6 +21,8 @@ class CRedisModifyList implements IModifyList
 			$bucket = crc32($key) % $this->bucketNum;
 		
 		$this->redis->sAdd($this->prefix."_".$bucket,$key);
+		
+		return true;
 	}
 
 }

@@ -11,13 +11,16 @@ class CIndexController extends CController
 	{	
 		//CSpp::getInstance()->getLogger()->debug('request start');
 		echo PHP_VERSION;
-		echo microtime();
+		echo microtime()."11111";
 		var_dump(CMUser::model()->setKey('1111')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
-		echo microtime();
+		echo microtime()."11111";
 		var_dump(CMUser::model()->get('1111'));
-		echo microtime();
+		echo microtime()."11111";
 		var_dump(CMUser1::model()->get('1111'));
-		echo microtime();
+		echo microtime()."11111";
+		$this->data['title']="测试";
+		$this->data['info']=CMUser1::model()->get('1111')->toArray();
+		$this->render('index/index.tpl');
 	}
 	
 	public function redisAction()

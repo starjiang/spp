@@ -108,7 +108,7 @@ class CSpp
 
 class CController
 {
-	public $data = null;
+	public $data = array();
 	public function before(){}
 	public function after(){}
 	

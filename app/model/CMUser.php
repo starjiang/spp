@@ -26,6 +26,18 @@ class CMUser extends CCacheModel
 		
 		return self::$source;
 	}
+	protected function delayWrite()
+	{
+		return true;
+	}
+	protected function modifyList()
+	{
+		if(self::$modifyList == null)
+		{
+			self::$modifyList = new CRedisModifyList(CConnMgr::init()->redis('CUserList'),'user');
+		}
+		return self::$modifyList;
+	}
 	
 	protected function persist()
 	{

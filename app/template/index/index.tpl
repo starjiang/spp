@@ -6,7 +6,8 @@
 </head>
 
 <body>
-<li><?=$name?></li>
+
+<li><?=$info['head']?></li>
 <li><?=$birth?></li>
 
 </body>
