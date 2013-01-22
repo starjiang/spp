@@ -146,7 +146,18 @@ class CRuntime
 {
 	static function init()
 	{
-	
+		if(isset(CConfig::$error) && isset(CConfig::$error['display']))
+		{
+			ini_set('display_errors',CConfig::$error['display']);
+		}
+		
+		if(isset(CConfig::$error) && isset(CConfig::$error['level']))
+		{
+			error_reporting(CConfig::$error['level']);
+		}
+		
+		ini_set('date.timezone','Asia/Shanghai');
+		
 		$path[] = SPP_PATH."/model";
 		$path[] = SPP_PATH."/model/cache";
 		$path[] = SPP_PATH."/component";
@@ -270,7 +281,6 @@ class CError
 	const ERR_NOT_FOUND_CLASS = 1001;
 	const ERR_NOT_FOUND_METHOD = 1002;
 	const ERR_URL_ROUTER = 1003;
-	
 }
 
 
