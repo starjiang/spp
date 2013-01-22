@@ -11,7 +11,7 @@ class CMemCache implements ICache
 	public function set($key,$val)
 	{
 
-		return $this->memcached->set($key,$val);
+		return $this->memcached->set($key,$val,MEMCACHE_COMPRESSED);
 	}
 	
 	public function get($key)

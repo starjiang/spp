@@ -67,7 +67,7 @@ abstract class CModel
 		
 		if($this->$keyName == null || $this->$keyName == '' )
 		{
-			throw new ErrorException('primay key field '.$this->$keyName.' is not set in '.get_class($this));
+			throw new CModelException('primay key field '.$this->$keyName.' is not set in '.get_class($this));
 		}
 		
 		foreach($fields as $key => $var)
@@ -99,7 +99,7 @@ abstract class CModel
 		}
 		else
 		{
-			throw new ErrorException('can not find method '.$m.' in '.get_class($this));
+			throw new CModelException('can not find method '.$m.' in '.get_class($this));
 		}
 	}
 	
@@ -118,7 +118,7 @@ abstract class CModel
 		}
 		else
 		{
-			throw new ErrorException('can not find field '.$field.' in '.get_class($this));
+			throw new CModelException('can not find field '.$field.' in '.get_class($this));
 		}
 
 	}
@@ -135,7 +135,7 @@ abstract class CModel
 		}
 		else
 		{
-			throw new ErrorException('can not find field '.$field.' in '.get_class($this));
+			throw new CModelException('can not find field '.$field.' in '.get_class($this));
 		}
 		return $this;
 
@@ -156,4 +156,6 @@ abstract class CModel
 	abstract public  function delete($key);
 	
 }
+
+
 

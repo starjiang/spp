@@ -64,7 +64,7 @@ class CSpp
 		
 			if(!method_exists ($controller, $actName))
 			{
-				throw new ErrorException('can not find '.$actName.'() in class '.$conName,CError::ERR_NOT_FOUND_METHOD);
+				throw new CSPPException('can not find '.$actName.'() in class '.$conName,CError::ERR_NOT_FOUND_METHOD);
 			}
 			
 			$controller->before();
@@ -183,7 +183,7 @@ class CRuntime
 		include ($fileName);
 		if(!class_exists($class) && !interface_exists($class))
 		{
-			throw new ErrorException("Can not find class ".$class." in file ".$fileName,CError::ERR_NOT_FOUND_CLASS);
+			throw new CSPPException("Can not find class ".$class." in file ".$fileName,CError::ERR_NOT_FOUND_CLASS);
 		}
 	}
 	
@@ -247,7 +247,7 @@ class CUrlMgr
 				$this->pathInfo=explode('/',  $pathArray[0]);
 				if(count($this->pathInfo) > 2)
 				{
-					throw new ErrorException("route url invalid",CError::ERR_URL_ROUTER);
+					throw new CSPPException("route url invalid",CError::ERR_URL_ROUTER);
 				}
 			}
 		}
@@ -275,6 +275,11 @@ class CUrlMgr
 		$action = 'C'.strtoupper($this->pathInfo[0][0]).substr($this->pathInfo[0],1).'Controller';
 		return $action;
 	}
+}
+
+class CSPPException extends ErrorException
+{
+	
 }
 
 class CError

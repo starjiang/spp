@@ -13,7 +13,7 @@ abstract class CRedisModel extends CModel
 		$keyName = $this->keyName();
 	
 		if($this->$keyName == null || $this->$keyName == '')
-			throw new ErrorException('the primay key field '.$keyName.' in '.get_class($this).' not setted');
+			throw new CModelException('the primay key field '.$keyName.' in '.get_class($this).' not setted');
 	
 		if($this->prefix() != '')
 			return $this->prefix()."_".$this->$keyName;

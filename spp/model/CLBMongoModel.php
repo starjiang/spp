@@ -33,7 +33,7 @@ abstract class CLBMongoModel extends CModel
 		
 		if($this->keyName() != '_id')
 		{
-			throw new ErrorException('mongodb keyname must be [_id] in '.get_class($this));
+			throw new CModelException('mongodb keyname must be [_id] in '.get_class($this));
 		}
 		
 		

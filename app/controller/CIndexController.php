@@ -10,6 +10,7 @@ class CIndexController extends CController
 	public function indexAction()
 	{	
 		//CSpp::getInstance()->getLogger()->debug('request start');
+		echo PHP_VERSION;
 		echo microtime();
 		var_dump(CMUser::model()->setKey('1111')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
 		echo microtime();

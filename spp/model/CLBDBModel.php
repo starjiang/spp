@@ -44,12 +44,12 @@ abstract class CLBDBModel extends CModel
 		if(!$sth)
 		{
 			$error=$pdos[$this->getIndex($this->getKey())]->errorInfo();
-			throw new ErrorException($error[2]);
+			throw new CModelException($error[2]);
 		}
 		if($sth->execute(array('key'=>$this->getKey(),'value'=>json_encode($this->toArray()))) === false)
 		{
 			$error=$sth->errorInfo();
-			throw new ErrorException($error[2]);
+			throw new CModelException($error[2]);
 		}
 	
 		return true;
@@ -65,13 +65,13 @@ abstract class CLBDBModel extends CModel
 		if(!$sth)
 		{
 			$error=$pdos[$this->getIndex($this->getKey())]->errorInfo();
-			throw new ErrorException($error[2]);
+			throw new CModelException($error[2]);
 		}
 				
 		if($sth->execute(array('key'=>$key)) === false)
 		{
 			$error=$sth->errorInfo();
-			throw new ErrorException($error[2]);
+			throw new CModelException($error[2]);
 		}
 
 		return true;
@@ -88,13 +88,13 @@ abstract class CLBDBModel extends CModel
 		if(!$sth)
 		{
 			$error=$pdos[$this->getIndex($this->getKey())]->errorInfo();
-			throw new ErrorException($error[2]);
+			throw new CModelException($error[2]);
 		}
 		
 		if($sth->execute(array('key'=>$key)) === false)
 		{
 			$error=$sth->errorInfo();
-			throw new ErrorException($error[2]);
+			throw new CModelException($error[2]);
 		}
 		$row = $sth->fetch(PDO::FETCH_ASSOC);
 		
@@ -132,13 +132,13 @@ abstract class CLBDBModel extends CModel
 			if(!$sth)
 			{
 				$error=$pdo->errorInfo();
-				throw new ErrorException($error[2]);
+				throw new CModelException($error[2]);
 			}
 			
 			if($sth->execute() === false)
 			{
 				$error=$sth->errorInfo();
-				throw new ErrorException($error[2]);
+				throw new CModelException($error[2]);
 			}
 				
 			$results = $sth->fetchAll(PDO::FETCH_ASSOC);

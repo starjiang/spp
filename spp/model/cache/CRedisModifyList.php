@@ -12,10 +12,15 @@ class CRedisModifyList implements IModifyList
 		$this->bucketNum = $bucketNum;
 	}
 	
-	public function push($value)
+	public function push($key)
 	{
-		$bucket = crc32($value) % $this->bucketNum;
-		$this->redis->sAdd($this->prefix."_".$bucket,$value);
+		$bucket = 0;
+		if(is_int($key))
+			$bucket = $key % $this->bucketNum;
+		else
+			$bucket = crc32($key) % $this->bucketNum;
+		
+		$this->redis->sAdd($this->prefix."_".$bucket,$key);
 	}
 
 }
