@@ -49,10 +49,13 @@ abstract class CModel
 	{
 		if( is_array($infos) || is_object($infos))
 		{
-			
+			$fields = $this->fields();
 			foreach($infos as $key => $var)
 			{
-				$this->$key = $var;
+				if(array_key_exists($key, $fields))
+				{
+					$this->$key = $var;
+				}
 			}
 		}
 

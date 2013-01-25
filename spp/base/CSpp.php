@@ -25,9 +25,9 @@ class CSpp
 	public function init()
 	{
 
-		CRuntime::init(); //初始化
+		CRuntime::init(); //鍒濆鍖�
 		
-		//初始化log
+		//鍒濆鍖杔og
 		if($this->logHandler != null)
 		{
 			if(isset(CConfig::$log) && isset(CConfig::$log['level']))
@@ -157,7 +157,6 @@ class CRuntime
 		}
 		
 		ini_set('date.timezone','Asia/Shanghai');
-		ini_set('short_open_tag',1);
 		
 		$path[] = SPP_PATH."/model";
 		$path[] = SPP_PATH."/model/cache";
