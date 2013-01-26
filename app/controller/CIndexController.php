@@ -9,10 +9,17 @@ class CIndexController extends CController
 	
 	public function indexAction()
 	{	
+
 		//CSpp::getInstance()->getLogger()->debug('request start');
-		echo PHP_VERSION;
+
 		echo microtime()."11111";
-		var_dump(CMUser::model()->setKey('1111')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		var_dump(CMUser::model()->setKey('1111')->setHead("yyyyyyyy\n\t\byyyyyy")->setName('starjiang1')->save());
+		var_dump(CMUser::model()->setKey('1112')->setHead("yyyyyyy\n\t\byyyyyyy")->setName('starjiang2')->save());
+		var_dump(CMUser::model()->setKey('1113')->setHead('yy\ryyyy\n\t\byyyyyyyy')->setName('starjiang3')->save());
+		var_dump(CMUser::model()->setKey('1114')->setHead('yyyyyyy\n\t\byyyyyyy')->setName('starjiang4')->save());
+		var_dump(CMUser::model()->setKey('1115')->setHead('yyyyyyyyyyyyyy')->setName('starjiang5')->save());
+		var_dump(CMUser::model()->setKey('1116')->setHead('yyyyy\ry\n\t\byyyyyyyy')->setName('starjiang6')->save());
+				
 		echo microtime()."11111";
 		var_dump(CMUser::model()->get('1111'));
 		echo microtime()."11111";
@@ -28,8 +35,28 @@ class CIndexController extends CController
 		//CSpp::getInstance()->getLogger()->debug('request start');
 		echo microtime();
 		var_dump(CRUser::model()->setKey('1111')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		var_dump(CRUser::model()->setKey('1112')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		var_dump(CRUser::model()->setKey('1113')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		
 		echo microtime();
-		var_dump(CRUser::model()->get('1111'));
+		var_dump(CRUser::model()->get('11111'));
+		var_dump(CRUser::mget(array('1111','1112','1113','11146')));
+		echo microtime();
+	}
+	
+	public function lbredisAction()
+	{
+		//CSpp::getInstance()->getLogger()->debug('request start');
+		echo microtime();
+		//var_dump(CLBRUser::model()->setKey('1111')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		//var_dump(CLBRUser::model()->setKey('1112')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		//var_dump(CLBRUser::model()->setKey('1113')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		//var_dump(CLBRUser::model()->setKey('1114')->setHead('yyyyyyyyyyyyyy')->setName('starjiang1')->save());
+		
+		echo microtime();
+		var_dump(CLBRUser::model()->get('1111'));
+		var_dump(CLBRUser::mget(array('1111','1112','1113','1117')));
+		var_dump(CLBRUser::model()->delete('1111'));
 		echo microtime();
 	}
 	

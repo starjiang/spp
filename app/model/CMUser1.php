@@ -1,40 +1,16 @@
 <?php
-class CMUser1 extends CCacheModel
+class CMUser1 extends CBaseCacheModel
 {
 	public static $fields = array('id'=>0,'name'=>'','head'=>'');
-	private static $cache = null;
-	private static $source = null;
-	private static $modifyList = null;
+	public static $cfgInfo = array();
 	
-	
-	protected  function cache()
+	public function __construct()
 	{
-		if(self::$cache == null)
+		if(self::$cfgInfo == null)
 		{
-			$mem = new CMemCache(CConnMgr::init()->mem(get_class($this)));
-			self::$cache = $mem;
-		}
-		return self::$cache;
-	}
-	
-	protected function source()
-	{
-		if(self::$source == null)
-		{
-			self::$source = new CMysqlSource('CDBUser');
+			self::$cfgInfo = CCReader::get('cfg.services.mem.'.get_called_class());
 		}
 		
-		return self::$source;
-	}
-	
-	protected function persist()
-	{
-		return true;
-	}
-	
-	protected  function prefix()
-	{
-		return 'user';
 	}
 	
 }

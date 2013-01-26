@@ -4,8 +4,8 @@ class CConfig
 
 	public static $path = array('../controller' , '../lib' , '../model');
 	
-	//E_ERROR=1,E_WARNING=2,E_PARSE=4,E_NOTICE=8
-	public static $error = array('display' => 1,'level' => 3,'cls' => 'CErrController' , 'method' => 'errHandler');
+	//E_ERROR=1,E_WARNING=2,E_PARSE=4,E_NOTICE=8,E_STRICT=2048,E_RECOVERABLE_ERROR=4096
+	public static $error = array('display' => 1,'level' => 4103,'cls' => 'CErrController' , 'method' => 'errHandler');
 	
 	public static $tpl = array('path' => '../template');
 	public static $log = array('path'=>'../logs/' , 'level' => 15);

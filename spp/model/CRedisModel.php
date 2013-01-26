@@ -23,10 +23,8 @@ abstract class CRedisModel extends CModel
 	
 	public function save()
 	{
-		$keyName=$this->keyName();
 		$nskey = $this->getNKey();
 		$var = $this->toArray();
-		$collection = $this->prefix();
 		return $this->redis()->set($nskey,json_encode($var));
 
 	}
@@ -48,7 +46,8 @@ abstract class CRedisModel extends CModel
 
 	public function delete($key)
 	{
-		return $this->redis()->delete($key);
+		$this->setKey($key);
+		return $this->redis()->delete($this->getNKey());
 	}
 	
 	public static function mget($keys)
@@ -58,20 +57,23 @@ abstract class CRedisModel extends CModel
 		
 		$objs = array();
 		$nsKeys = array();
+		
 		for($i=0; $i < count($keys); $i++)
 		{
-			$obj=new $caller();
-			$obj->setKey($keys[$i]);
-			$objs[$keys[$i]] = $obj;
-			$nsKeys[$obj->getNKey()]=$keys[$i];
+			$callerObj->setKey($keys[$i]);
+			$nsKeys[$callerObj->getNKey()]=$keys[$i];
 		}
 		
 		$vars = $callerObj->redis()->getMultiple(array_keys($nsKeys));
 		
-		foreach ($vars as $key =>$var)
+		foreach ($vars as $var)
 		{
-			$objs[$nsKeys[$key]]->fromArray(json_decode($var,true))->setDirty(false);
-			unset($nsKeys[$key]);
+			if($var !== false)
+			{
+				$obj=new $caller();
+				$obj->fromArray(json_decode($var,true))->setDirty(false);
+				$objs[$obj->getKey()] = $obj;
+			}
 		}
 		
 		return $objs;
