@@ -9,21 +9,24 @@ class CIndexController extends CController
 	
 	public function indexAction()
 	{	
+		echo $data= json_encode(7555555555555777777);
+		
+		echo json_decode($data);
 
 		//CSpp::getInstance()->getLogger()->debug('request start');
 
 		echo microtime()."11111";
-		var_dump(CMUser::model()->setKey('1111')->setHead("yyyyyyyy\n\t\byyyyyy")->setName('starjiang1')->save());
-		var_dump(CMUser::model()->setKey('1112')->setHead("yyyyyyy\n\t\byyyyyyy")->setName('starjiang2')->save());
-		var_dump(CMUser::model()->setKey('1113')->setHead('yy\ryyyy\n\t\byyyyyyyy')->setName('starjiang3')->save());
-		var_dump(CMUser::model()->setKey('1114')->setHead('yyyyyyy\n\t\byyyyyyy')->setName('starjiang4')->save());
-		var_dump(CMUser::model()->setKey('1115')->setHead('yyyyyyyyyyyyyy')->setName('starjiang5')->save());
-		var_dump(CMUser::model()->setKey('1116')->setHead('yyyyy\ry\n\t\byyyyyyyy')->setName('starjiang6')->save());
+		//var_dump(CMUser::model()->setKey('1111')->setHead("yyyyyyyy\n\t\byyyyyy")->setName('starjiang1')->save());
+		//var_dump(CMUser::model()->setKey('1112')->setHead("yyyyyyy\n\t\byyyyyyy")->setName('starjiang2')->save());
+		//var_dump(CMUser::model()->setKey('1113')->setHead('yy\ryyyy\n\t\byyyyyyyy')->setName('starjiang3')->save());
+		//var_dump(CMUser::model()->setKey('1114')->setHead('yyyyyyy\n\t\byyyyyyy')->setName('starjiang4')->save());
+		//var_dump(CMUser::model()->setKey('1115')->setHead('yyyyyyyyyyyyyy')->setName('starjiang5')->save());
+		//var_dump(CMUser::model()->setKey('1116')->setHead('yyyyy\ry\n\t\byyyyyyyy')->setName('starjiang6')->save());
 				
 		echo microtime()."11111";
 		var_dump(CMUser::model()->get('1111'));
 		echo microtime()."11111";
-		var_dump(CMUser1::model()->get('1111'));
+		var_dump(CMUser1::model()->get('1111')->save());
 		echo microtime()."11111";
 		$this->data['title']="测试";
 		$this->data['info']=CMUser1::model()->get('1111')->toArray();

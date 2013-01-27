@@ -25,7 +25,10 @@ abstract class CRedisModel extends CModel
 	{
 		$nskey = $this->getNKey();
 		$var = $this->toArray();
-		return $this->redis()->set($nskey,json_encode($var));
+		if(!$this->redis()->set($nskey,json_encode($var)))
+		{
+			throw new CModelException('save redis fail in '.get_class($this));
+		}
 
 	}
 

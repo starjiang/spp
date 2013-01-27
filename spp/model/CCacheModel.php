@@ -48,23 +48,38 @@ abstract class CCacheModel extends CModel
 		$nskey = $this->getNKey();
 		$val = $this->toArray();
 		
-		if($this->cache()->set($nskey,json_encode($val)) === true)
+		if($this->persist())
 		{
-			if($this->persist())
+			if($this->delayWrite()) //缓写支持
 			{
-				if($this->delayWrite()) //缓写支持
-				{
-					if($this->modifyList()) return $this->modifyList()->push($this->$keyName);
+				if($this->modifyList()) 
+				{ 
+					$this->modifyList()->push($this->$keyName);
 				}
 				else
 				{
-					if($this->source())	return $this->source()->set($this->$keyName,$val);
+					throw new CModelException('modifyList is null in '.get_class($this));
 				}
-
 			}
-			return true;
+			else
+			{
+				if($this->source())	
+				{
+					$this->source()->set($this->$keyName,$val);
+				}
+				else
+				{
+					throw new CModelException('source is null in '.get_class($this));
+				}
+			}
+
 		}
-		return false;
+
+		if(!$this->cache()->set($nskey,json_encode($val)))
+		{
+			throw new CModelException('save cache fail in '.get_class($this));
+		}
+
 	}
 
 	public function get($key)
@@ -130,8 +145,6 @@ abstract class CCacheModel extends CModel
 
 				if($callerObj->source()) //只有当源存在时才取
 				{
-
-					
 					$vars = $callerObj->source()->get(array_values($nsKeys));
 					if( $vars !== false)
 					{
@@ -149,19 +162,15 @@ abstract class CCacheModel extends CModel
 				{
 					unset($objs[$value]);
 				}
-
 				return $objs;
-
 			}
 			else 
 			{
 				return $objs;
 			}
-
 		}
 		else //取失败时从源里面取
 		{
-
 			if($callerObj->source())
 			{
 				$vars = $callerObj->source()->get($keys);

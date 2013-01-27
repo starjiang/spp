@@ -24,7 +24,10 @@ abstract class CMongoModel extends CModel
 		
 		$collection = $this->prefix();
 		
-		return $this->mongodb()->$collection->save($var);
+		if(!$this->mongodb()->$collection->save($var))
+		{
+			throw new CModelException('save mongodb fail in '.get_class($this));
+		}
 	}
 
 	public function get($key)

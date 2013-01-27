@@ -55,7 +55,6 @@ abstract class CDBModel extends CModel
 			$error=$sth->errorInfo();
 			throw new CModelException($error[2]);
 		}
-		return true;
 	}
 	
 	public function delete($key)

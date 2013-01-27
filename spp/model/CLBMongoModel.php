@@ -35,12 +35,14 @@ abstract class CLBMongoModel extends CModel
 		{
 			throw new CModelException('mongodb keyname must be [_id] in '.get_class($this));
 		}
-		
-		
+				
 		$collection = $this->prefix();
 		$mongodbs = $this->mongodbs();
 		
-		return $mongodbs[$this->getIndex($this->getKey())]->$collection->save($var);
+		if(!$mongodbs[$this->getIndex($this->getKey())]->$collection->save($var))
+		{
+			throw new CModelException('save mongodb fail in '.get_class($this));
+		}
 	}
 
 	public function get($key)

@@ -17,9 +17,9 @@ class CSpp
 		return self::$instance;
 	}
 	
-	public function setLogHandler($logHandler)
+	public function setLogger($log)
 	{
-		$this->logHandler = $logHandler;
+		$this->log = $log;
 	}
 	
 	public function init()
