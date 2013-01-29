@@ -39,14 +39,7 @@ class CUserController extends CController
 			return;
 		}
 		
-		if(!CMGUser::model()->setKey($name)->setNick($nick)->setPwd($pwd1)->save())
-		{
-			$ret['ret'] = 4;
-			$ret['msg'] = 'system error';
-			echo json_encode($ret);
-			return;
-		}
-		
+		CMGUser::model()->setKey($name)->setNick($nick)->setPwd($pwd1)->save();
 		echo json_encode($ret);
 	}
 	

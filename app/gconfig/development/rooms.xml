@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rooms>
+	<R1001 id="R1001" num='5' small="50" large="500" />
+	<R1002 id="R1002" num='5' small="50" large="500" />
+	<R1003 id="R1003" num='5' small="50" large="500" />
+	<R1004 id="R1004" num='5' small="50" large="500" />
+</rooms>
