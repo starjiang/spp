@@ -150,7 +150,7 @@ abstract class CLBDBModel extends CModel
 			
 					$obj->fromArray(json_decode($result['val'],true))->setDirty(false);
 						
-					$objs[$result[$obj->keyName()]] = $obj;
+					$objs[$obj->getKey()] = $obj;
 				}
 			}
 		}

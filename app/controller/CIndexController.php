@@ -1,12 +1,7 @@
 <?php
-class CIndexController extends CController
+class CIndexController extends CBaseController
 {
 
-	public function before()
-	{
-		CCReader::init(CConfig::$shmMKey,CConfig::$shmSKey);
-	}
-	
 	public function indexAction()
 	{	
 		echo $data= json_encode(7555555555555777777);

@@ -6,22 +6,22 @@ class CHallController extends CBaseController
 	{
 		$type = $_REQUEST['type'];
 		$ids = CCReader::get('cfg.rooms.'.$type);	
-		$ret = array();
-		$ret['ret'] = 0;
-		$ret['msg'] = 'ok';
+		$this->data = array();
+		$this->data['ret'] = 0;
+		$this->data['msg'] = 'ok';
 		
 		if(!$ids)
 		{
-			$ret['ret']= 1;
-			$ret['msg']='type not found';
-			echo json_encode($ret);
+			$this->data['ret']= 1;
+			$this->data['msg']='type not found';
+			echo json_encode($this->data);
 			return;
 		}
 		
 		$infos = CCReader::mget($ids);
 		
-		$ret['infos'] = $infos;
-		echo json_encode($ret);
+		$this->data['infos'] = $infos;
+		echo json_encode($this->data);
 
 	}
 	
@@ -32,21 +32,21 @@ class CHallController extends CBaseController
 		
 		$info = CCReader::get('cfg.rooms.'.$type.".".$roomId);
 		
-		$ret = array();
-		$ret['ret'] = 0;
-		$ret['msg'] = 'ok';
+		$this->data = array();
+		$this->data['ret'] = 0;
+		$this->data['msg'] = 'ok';
 	
 		if(!$info)
 		{
-			$ret['ret']= 1;
-			$ret['msg']='room not found';
-			echo json_encode($ret);
+			$this->data['ret']= 1;
+			$this->data['msg']='room not found';
+			echo json_encode($this->data);
 			return;
 		}
 
 	
-		$ret['info'] = $info;
-		echo json_encode($ret);
+		$this->data['info'] = $info;
+		echo json_encode($this->data);
 	
 	}
 }
