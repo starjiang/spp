@@ -1,11 +1,7 @@
 <?php
-class CHallController extends CController
+class CHallController extends CBaseController
 {
-	public function before()
-	{
-		CCReader::init(CConfig::$shmMKey,CConfig::$shmSKey);
-	}
-	
+
 	public function getRoomsInfoAction()
 	{
 		$type = $_REQUEST['type'];
