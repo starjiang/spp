@@ -144,7 +144,7 @@ class CUserController extends CController
 		}
 		
 		$user->setNick('starjiang')->setHead('http://192.168.132.128/img/head/head1.jpg');
-		$user->setCoins(0)->setScore(0)->setXp(0)->setPwd('')->save();
+		$user->setCoins(0)->setScore(0)->setXp(0)->setPwd('123')->save();
 	}
 	
 }
