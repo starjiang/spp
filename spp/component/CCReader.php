@@ -42,7 +42,8 @@ class CCReader
 				$value = CCReader::get($key);
 				if($value)
 				{
-					$data[$key]  = $value;
+					$k = explode('.', $key);
+					$data[array_pop($k)]  = $value;
 				}
 			}
 			return $data;				
