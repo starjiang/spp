@@ -6,7 +6,7 @@ class CXMLPaser
 	private $data = array();
 	private $xml = null;
 	private $childnum = 0 ;
-	private $primes = array(12281,16381,21841,29123,38833,51787,69061,92083,122777,163729,218357,291143,388211,517619);
+	private $primes = array(12281,21841,38833,69061,122777,218357,388211,517619);
 		
 	public function init($file)
 	{

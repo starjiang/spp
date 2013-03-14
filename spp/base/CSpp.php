@@ -26,23 +26,13 @@ class CSpp
 	{
 
 		CRuntime::init(); //鍒濆鍖�
-		
-		//鍒濆鍖杔og
-		if($this->logHandler != null)
+
+		if(isset(CConfig::$log) && isset(CConfig::$log['path']) && isset(CConfig::$log['level']))
 		{
-			if(isset(CConfig::$log) && isset(CConfig::$log['level']))
-			{
-				$this->log = new CLog($this->logHandler,CConfig::$log['level']);
-			}
+			$this->logHandler= new CLogFileHandler(CConfig::$log['path'].date('Y-m-d').'.log');
+			$this->log = new CLog($this->logHandler,CConfig::$log['level']);
 		}
-		else
-		{
-			if(isset(CConfig::$log) && isset(CConfig::$log['path']) && isset(CConfig::$log['level']))
-			{
-				$this->logHandler= new CLogFileHandler(CConfig::$log['path'].date('Y-m-d').'.log');
-				$this->log = new CLog($this->logHandler,CConfig::$log['level']);
-			}
-		}
+
 	}
 	
 	public function getLogger()

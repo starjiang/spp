@@ -23,7 +23,7 @@ class CBaseCacheModel extends CCacheModel
 			return null;
 
 		if($this->source == null)
-			$this->source = new CMysqlSource($caller::$cfgInfo['source']);
+			$this->source = new CModelSource($caller::$cfgInfo['source']);
 		return $this->source;
 	}
 	

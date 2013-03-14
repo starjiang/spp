@@ -14,7 +14,7 @@ class CActLog
 		{
 			$data['module']=$module;
 			$data['msg']="[".date('Y-m-d H:i:s')."] ".$msg;
-			self::$logHandler->write(json_encode($data));
+			self::$logHandler->write($data);
 		}
 	}
 }

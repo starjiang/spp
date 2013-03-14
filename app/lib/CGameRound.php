@@ -69,6 +69,11 @@ class CGameRound
 		
 	}
 	
+	public function vs($player1,$player2)
+	{
+		
+	}
+	
 	public function checkOut()
 	{
 		

@@ -16,11 +16,7 @@ abstract class CMongoModel extends CModel
 
 		$var = $this->toArray();
 		
-		if($this->keyName() != '_id')
-		{
-			throw new CModelException('mongodb keyname must be [_id] in '.get_class($this));
-		}
-		
+		$var['_id'] = $this->getKey();		
 		
 		$collection = $this->prefix();
 		
@@ -90,7 +86,7 @@ abstract class CMongoModel extends CModel
 			$obj=new $caller();
 			$obj->setKey($result['_id']);
 			$obj->fromArray($result)->setDirty(false);
-			$objs[$result['_id']] = $obj;
+			$objs[$obj->getKey()] = $obj;
 		}
 		return $objs;
 	}
@@ -132,7 +128,7 @@ abstract class CMongoModel extends CModel
 			$obj=new $caller();
 			$obj->setKey($result['_id']);
 			$obj->fromArray($result)->setDirty(false);
-			$objs[$result['_id']] = $obj;
+			$objs[$obj->getKey()] = $obj;
 		}
 		return $objs;
 	}
