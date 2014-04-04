@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+	<db>
+		<CLDBUserTest hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_user_lx" prefix='db_user_lx' />
+		<CLDBUserLeaningCar hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_user_lc" prefix='db_user_lc' />
+		<CLDBUserInfo hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_user_info" prefix='db_user_info' />
+		<CLDBUserBookList hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_useryd_list" prefix='db_useryd_list' />
+		<CLDBSubjectInfo hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_lx_info" prefix='db_lx_info' />
+		<CLDBSchoolInfo hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_jx_info" prefix='db_jx_info' />
+		<CLDBSchoolBook hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_jx_yd" prefix='db_jx_yd' />
+		<CLDBFlowId hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_last_id" prefix='db_last_id' />
+		<CLDBCarList hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_car_list" prefix='db_car_list' />
+		<CLDBBookInfo hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_yd_info" prefix='db_yd_info' />
+		<CLDBCommon hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_common" prefix='db_common' />
+		<CLDBCarInfo hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_car_info" prefix='db_car_info' />
+		<CLDBRule hosts="localhost" ports="3306" users="username" pwds="pwssword" dbs="db_rule" prefix='db_rule' />
+	</db>
+	<mem>
+		<CMUserTest hosts="127.0.0.1" ports="11211" persist="1" source="CLDBUserTest"  delay_write="0" prefix='db_user_lx' />
+		<CMUserLeaningCar hosts="127.0.0.1" ports="11211" persist="1" source="CLDBUserLeaningCar" delay_write="0" prefix='db_user_lc' />
+		<CMUserInfo hosts="127.0.0.1" ports="11211" persist="1" source="CLDBUserInfo" delay_write="0" prefix='db_user_info' />
+		<CMUserBookList hosts="127.0.0.1" ports="11211" persist="1" source="CLDBUserBookList" delay_write="0" prefix='db_useryd_list' />
+		<CMSubjectInfo hosts="127.0.0.1" ports="11211" persist="1" source="CLDBSubjectInfo" delay_write="0" prefix='db_lx_info' />
+		<CMSchoolInfo hosts="127.0.0.1" ports="11211" persist="1" source="CLDBSchoolInfo" delay_write="0" prefix='db_jx_info' />
+		<CMSchoolBook hosts="127.0.0.1" ports="11211" persist="1" source="CLDBSchoolBook" delay_write="0" prefix='db_jx_yd' />
+		<CMFlowId hosts="127.0.0.1" ports="11211" persist="1" source="CLDBFlowId" delay_write="0" prefix='db_last_id' />
+		<CMCarList hosts="127.0.0.1" ports="11211" persist="1" source="CLDBCarList" delay_write="0" prefix='db_car_list' />
+		<CMBookInfo hosts="127.0.0.1" ports="11211" persist="1" source="CLDBBookInfo" delay_write="0" prefix='db_yd_info' />
+		<CMCommon hosts="127.0.0.1" ports="11211" persist="1" source="CLDBCommon" delay_write="0" prefix='db_common' />
+		<CMCarInfo hosts="127.0.0.1" ports="11211" persist="1" source="CLDBCarInfo" delay_write="0" prefix='db_car_info' />
+		<CMRule hosts="127.0.0.1" ports="11211" persist="1" source="CLDBRule" delay_write="0" prefix='db_rule' />
+	</mem>
+	<mongo>
+		
+	</mongo>
+	<redis>
+		<CRedisText host="127.0.0.1" port="6379" />
+		<CRedisRobot host="127.0.0.1" port="6379" />
+		<CRdeisEatey host="127.0.0.1" port="6379" />
+	</redis>
+</services>

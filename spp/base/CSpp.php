@@ -25,7 +25,7 @@ class CSpp
 	public function init()
 	{
 
-		CRuntime::init(); //鍒濆鍖�
+		CRuntime::init(); 
 
 		if(isset(CConfig::$log) && isset(CConfig::$log['path']) && isset(CConfig::$log['level']))
 		{
@@ -42,23 +42,25 @@ class CSpp
 	
 	public function run()
 	{
-		
 		try
 		{
 			CUrlMgr::getInstance()->init();
 			
 			$conName=CUrlMgr::getInstance()->getController();
 			$actName=CUrlMgr::getInstance()->getAction();
-		
+			
 			$controller=new $conName;  
-		
+			
 			if(!method_exists ($controller, $actName))
 			{
 				throw new CSPPException('can not find '.$actName.'() in class '.$conName,CError::ERR_NOT_FOUND_METHOD);
 			}
 			
-			$controller->before();
-			$controller->$actName();
+			$next = $controller->before();
+			
+			if($next)
+				$controller->$actName();
+			
 			$controller->after();
 		}
 		catch(Exception $e)
@@ -154,11 +156,11 @@ class CRuntime
 		$path[] = SPP_PATH."/component/loghandler";
 		$path[] = SPP_PATH."/base";
 
-		
 		if(isset(CConfig::$path) && is_array(CConfig::$path))
 		{
 			$path = array_merge($path,CConfig::$path);
 		}
+
 		
 		set_include_path(get_include_path() . PATH_SEPARATOR . implode(PATH_SEPARATOR,$path));
 		

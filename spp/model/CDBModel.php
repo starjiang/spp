@@ -160,7 +160,7 @@ abstract class CDBModel extends CModel
 
 				$obj->fromArray($result)->setDirty(false);
 			
-				$objs[$obj->getKey()] = $obj;
+				$objs[$result[$obj->keyName()]] = $obj;
 			}
 			return $objs;
 		}

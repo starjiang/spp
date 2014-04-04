@@ -23,7 +23,7 @@ abstract class CModel
 	
 	protected  function keyName()
 	{
-		if($this->keyName == null)
+		if(!isset($this->keyName) || $this->keyName == null)
 		{
 			$keys= array_keys($this->fields());
 			$this->keyName = $keys[0];
@@ -58,7 +58,6 @@ abstract class CModel
 				}
 			}
 		}
-
 		return $this;
 	}
 
@@ -111,8 +110,9 @@ abstract class CModel
 	{
 		if(array_key_exists($field,$this->fields()))
 		{
+			//print_r($this->$field);
 			
-			if($this->$field === null)
+			if(!isset($this->$field) || $this->$field === null)
 			{
 				$fields = $this->fields();
 				$this->$field = $fields[$field];
@@ -130,7 +130,7 @@ abstract class CModel
 	{
 		if(array_key_exists($field,$this->fields()))
 		{
-			if($this->$field !== $value)
+			if(!isset($this->$field) || $this->$field !== $value)
 			{
 				$this->$field = $value;
 				$this->dirty = true;
@@ -150,7 +150,6 @@ abstract class CModel
 		$caller = get_called_class();
 		return new $caller();
 	}
-	
 	
 	abstract public  function save();
 

@@ -139,7 +139,7 @@ abstract class CSFDBModel extends CModel
 
 				$obj->fromArray(json_decode($result['val'],true))->setDirty(false);
 			
-				$objs[$obj->getKey()] = $obj;
+				$objs[$result[$obj->keyName()]] = $obj;
 			}
 			return $objs;
 		}

@@ -69,7 +69,6 @@ class CCReader
 		return true;
 
 	}	
-	
 	public static function get($key)
 	{
 		if(CCReader::$shmMHashMap != null)
