@@ -23,5 +23,7 @@ demo app 目录说明：
 * app/model 数据模型
 * app/template 视图模版目录
 
-* 框架介绍见doc/introduce.ppt
-* 框架命名规范见 doc/spp框架命名规范
+框架介绍见doc/introduce.ppt
+===
+框架命名规范见 doc/spp框架命名规范
+===
