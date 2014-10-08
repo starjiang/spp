@@ -140,7 +140,7 @@ class CValidate
 	 
 	/*
 	 -----------------------------------------------------------
-	函数名称:isNumberLength($theelement, $min, $max)
+	函数名称:isEngLength($theelement, $min, $max)
 	简要描述:检查字符串长度是否符合要求
 	输入:mixed (字符串，最小长度，最大长度)
 	输出:boolean

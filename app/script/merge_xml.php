@@ -1,5 +1,7 @@
 <?php
 
+include 'init.php';
+
 if(count($argv)<3)
 {
 	echo "usage:".$argv[0]." path outfile [exclude]\n";
@@ -21,6 +23,10 @@ if($files === false)
 	echo "path is invalid\n";
 	return;
 }
+
+
+echo "merge xml files to [".$dir.$outfile."]\n";
+
 
 $output = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<cfg>";
 

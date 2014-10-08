@@ -34,9 +34,18 @@ abstract class CLBMongoModel extends CModel
 		$var['_id'] = $this->getKey();
 			
 		$collection = $this->prefix();
-		$mongodbs = $this->mongodbs();
+		$mongodbs = $this->mongodbs();		
 		
-		if(!$mongodbs[$this->getIndex($this->getKey())]->$collection->save($var))
+		$ret = false;
+		if($this->isCreate())
+		{
+			$ret = $mongodbs[$this->getIndex($this->getKey())]->$collection->insert($var);
+		}
+		else
+		{
+			$ret = $mongodbs[$this->getIndex($this->getKey())]->$collection->save($var);
+		}
+		if(!$ret)
 		{
 			throw new CModelException('save mongodb fail in '.get_class($this));
 		}

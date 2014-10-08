@@ -3,13 +3,12 @@ abstract class CDBModel extends CModel
 {
 	abstract  protected function pdo();
 	protected function rpdos(){return null;}
-	
+		
 	protected  function prefix()
 	{
 		return strtolower(get_class($this));
 	}
-	
-	
+
 	private function getIdList($keys)
 	{
 		$newKeys = array();
@@ -20,28 +19,74 @@ abstract class CDBModel extends CModel
 		return implode(',', $newKeys);
 	}
 	
-	private function getFeildsList1()
+	private function getFeildsList($hasKey = true)
 	{
-		
-		$list = implode(',', array_keys($this->fields()));
+		$fields = array_keys($this->fields());
+		if(!$hasKey)
+		{
+			unset($fields[$this->keyName()]);
+		}
+		$list = implode(',',$fields);
 		return $list;
 	}
-	
-	private function getFeildsList2()
+
+	private function getInsertFeildsList($hasKey = true)
 	{
 		$keys=array();
 		$fields = array_keys($this->fields());
+		if(!$hasKey)
+		{
+			unset($fields[$this->keyName()]);
+		}
 		foreach ($fields as $key)
 		{
 			$keys[]=':'.$key;
 		}
+	
 		$list = implode(',', $keys);
 		return $list;
 	}
 	
-	public function save()
+	
+	private function getUpdateFieldsList()
 	{
-		$sth = $this->pdo()->prepare('replace into '.$this->prefix().' ('.$this->getFeildsList1().') values ('.$this->getFeildsList2().')');
+		$keys=array();
+		$fields = array_keys($this->fields());
+		unset($fields[$this->keyName()]);
+		foreach ($fields as $key)
+		{
+			$keys[]=$key.'=:'.$key;
+		}
+	
+		$list = implode(',', $keys);
+		return $list;
+	}
+	
+	public function save($update = false)
+	{
+		$sth = null;
+		if($this->isCreate())
+		{
+			if($this->getKey() == '' || $this->getKey() == 0 || $this->getKey() == null)
+			{
+				$sth = $this->pdo()->prepare('insert into '.$this->prefix().' ('.$this->getFeildsList(false).') values ('.$this->getInsertFeildsList(false).')');
+			}
+			else 
+			{
+				$sth = $this->pdo()->prepare('insert into '.$this->prefix().' ('.$this->getFeildsList().') values ('.$this->getInsertFeildsList().')');
+			}
+		}
+		else 
+		{
+			if($update)
+			{
+				$sth = $this->pdo()->prepare('update '.$this->prefix().' set '.$this->getUpdateFieldsList().' where '.$this->keyName().'='.$this->getKey());
+			}	
+			else 
+			{
+				$sth = $this->pdo()->prepare('replace into '.$this->prefix().' ('.$this->getFeildsList().') values ('.$this->getInsertFeildsList().')');
+			}
+		}
 		
 		if(!$sth)
 		{
@@ -51,9 +96,12 @@ abstract class CDBModel extends CModel
 		
 		if($sth->execute($this->toArray()) === false)
 		{
-				
 			$error=$sth->errorInfo();
 			throw new CModelException($error[2]);
+		}
+		if($this->isCreate())
+		{
+			$this->setKey($this->pdo()->lastInsertId());
 		}
 	}
 	
@@ -92,7 +140,7 @@ abstract class CDBModel extends CModel
 			$pdo = $this->pdo();
 		}
 				
-		$sth = $pdo->prepare('select * from '.$this->prefix().' where '.$this->keyName().' = :id');
+		$sth = $pdo->prepare('select '.$this->getFeildsList().' from '.$this->prefix().' where '.$this->keyName().' = :id');
 		
 		if(!$sth)
 		{
@@ -109,7 +157,7 @@ abstract class CDBModel extends CModel
 		
 		if(is_array($row))
 		{
-			$this->fromArray($row)->setDirty(false);
+			$this->fromArray($row)->setDirty(false)->setCreate(false);
 			return $this;
 		}
 		return false;
@@ -134,7 +182,7 @@ abstract class CDBModel extends CModel
 			$pdo = $callerObj->pdo();
 		}
 		
-		$sth = $pdo->prepare("select * from ".$callerObj->prefix()." where ".$callerObj->keyName()." in (".$callerObj->getIdList($keys).")");
+		$sth = $pdo->prepare("select ".$callerObj->getFeildsList()." from ".$callerObj->prefix()." where ".$callerObj->keyName()." in (".$callerObj->getIdList($keys).")");
 		
 		if(!$sth)
 		{
@@ -158,7 +206,7 @@ abstract class CDBModel extends CModel
 			{
 				$obj = new $caller();
 
-				$obj->fromArray($result)->setDirty(false);
+				$obj->fromArray($result)->setDirty(false)->setCreate(false);
 			
 				$objs[$result[$obj->keyName()]] = $obj;
 			}
@@ -166,13 +214,73 @@ abstract class CDBModel extends CModel
 		}
 		return false;
 	}
-		
-	public static function query($where = '')
+
+	public static function queryCount($query = '',$params = null)
 	{
 		$caller = get_called_class();
 		$callerObj = new $caller();
 		
-		if($where != '') $where = " where ".$where;
+		if($query != '') $query = " ".$query;
+		
+		$pdo = null;
+		$rpdos = $callerObj->rpdos();
+		
+		if($rpdos != null && count($rpdos) > 0)
+		{
+			$index = rand()%count($rpdos);
+			$pdo = $rpdos[$index];
+		}
+		else
+		{
+			$pdo = $callerObj->pdo();
+		}
+		
+		$fieldList = $callerObj->getFeildsList();
+
+		$sth = $pdo->prepare("select count(*) as total from ".$callerObj->prefix().$query);
+		
+		if(!$sth)
+		{
+			$error=$pdo->errorInfo();
+			throw new CModelException($error[2]);
+		}
+		
+		if(is_array($params))
+		{
+			foreach($params as $key => $value)
+			{
+				if(is_int($value))
+				{
+					$sth->bindValue(":$key",$value,PDO::PARAM_INT);
+				}
+				else if(is_string($value))
+				{
+					$sth->bindValue(":$key",$value,PDO::PARAM_STR);
+				}
+				else if(is_bool($value))
+				{
+					$sth->bindValue(":$key",$value,PDO::PARAM_BOOL);
+				}
+			}
+		}
+
+		if($sth->execute() === false)
+		{
+			$error=$sth->errorInfo();
+			throw new CModelException($error[2]);
+		}
+			
+		$result = $sth->fetch(PDO::FETCH_ASSOC);
+		return (int)$result['total'];
+		
+	}
+
+	public static function query($query = '',$params = null,$fields = null)
+	{
+		$caller = get_called_class();
+		$callerObj = new $caller();
+		
+		if($query != '') $query = " ".$query;
 		
 		$pdo = null;
 		$rpdos = $callerObj->rpdos();
@@ -187,13 +295,37 @@ abstract class CDBModel extends CModel
 			$pdo = $callerObj->pdo();
 		}
 
+		$fieldList = $callerObj->getFeildsList();
+		if(is_array($fields))
+		{
+			$fieldList = implode(',', $fields);
+		}
 		
-		$sth = $pdo->prepare("select * from ".$callerObj->prefix().$where);
+		$sth = $pdo->prepare("select ".$fieldList." from ".$callerObj->prefix().$query);
 		
 		if(!$sth)
 		{
 			$error=$pdo->errorInfo();
 			throw new CModelException($error[2]);
+		}
+		
+		if(is_array($params))
+		{
+			foreach($params as $key => $value)
+			{
+				if(is_int($value))
+				{
+					$sth->bindValue(":$key",$value,PDO::PARAM_INT);
+				}
+				else if(is_string($value))
+				{
+					$sth->bindValue(":$key",$value,PDO::PARAM_STR);
+				}
+				else if(is_bool($value))
+				{
+					$sth->bindValue(":$key",$value,PDO::PARAM_BOOL);
+				}
+			}
 		}
 		
 		if($sth->execute() === false)
@@ -211,7 +343,7 @@ abstract class CDBModel extends CModel
 			{
 				$obj = new $caller();
 		
-				$obj->fromArray($result)->setDirty(false);
+				$obj->fromArray($result)->setDirty(false)->setCreate(false);
 					
 				$objs[$obj->getKey()] = $obj;
 			}

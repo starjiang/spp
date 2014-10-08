@@ -8,19 +8,19 @@ if(count($argv) < 2)
 	return;	
 }
 
+echo "load [".$argv[1]."] to shm\n";
+
 $filename = $argv[1];
-
-
 $paser = new CXMLPaser;
 if(!$paser->init($filename))
 {
-	echo "load xml fail\n";
+	echo $paser->getErrMsg()."\n";
 	return;
 }
 
 if(!$paser->toShm(CConfig::$shmMKey,CConfig::$shmSKey))
 {
-	echo "load to shm fail\n";
+	echo $paser->getErrMsg()."\n";
 	return;
 }
 

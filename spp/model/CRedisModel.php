@@ -12,7 +12,7 @@ abstract class CRedisModel extends CModel
 	{
 		$keyName = $this->keyName();
 	
-		if($this->$keyName == null || $this->$keyName == '')
+		if($this->$keyName == null || $this->$keyName == '' || $this->$keyName == 0)
 			throw new CModelException('the primay key field '.$keyName.' in '.get_class($this).' not setted');
 	
 		if($this->prefix() != '')
@@ -25,11 +25,23 @@ abstract class CRedisModel extends CModel
 	{
 		$nskey = $this->getNKey();
 		$var = $this->toArray();
-		if(!$this->redis()->set($nskey,json_encode($var)))
+		$ret = false;
+		if($this->isCreate())
 		{
-			throw new CModelException('save redis fail in '.get_class($this));
+			$ret = $this->redis()->setnx($nskey,CUtils::encode($var));
+			if(!$ret)
+			{
+				throw new CModelException($nskey.' add to redis fail in '.get_class($this));
+			}
 		}
-
+		else 
+		{
+			$ret = $this->redis()->set($nskey,CUtils::encode($var));
+			if(!$ret)
+			{
+				throw new CModelException($nskey.' save to redis fail in '.get_class($this));
+			}
+		}
 	}
 
 	public function get($key)
@@ -39,7 +51,7 @@ abstract class CRedisModel extends CModel
 		
 		if($var !== false)
 		{
-			$this->fromArray(json_decode($var,true))->setDirty(false);
+			$this->fromArray(CUtils::decode($var))->setDirty(false)->setCreate(false);
 			return $this;
 		}
 		
@@ -74,7 +86,7 @@ abstract class CRedisModel extends CModel
 			if($var !== false)
 			{
 				$obj=new $caller();
-				$obj->fromArray(json_decode($var,true))->setDirty(false);
+				$obj->fromArray(CUtils::decode($var))->setDirty(false)->setCreate(false);
 				$objs[$obj->getKey()] = $obj;
 			}
 		}

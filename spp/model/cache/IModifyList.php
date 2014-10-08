@@ -1,5 +1,5 @@
 <?php
 interface IModifyList
 {
-	public function push($key);
+	public function push($value);
 }

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<events>
-	<Event1 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
-	<Event2 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
-	<Event3 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
-	<Event4 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
-	<Event5 starttime="2013-01-23" endtime="2013-01-12" award="{}" />
-</events>

@@ -7,23 +7,23 @@ class CShmHashMap
 	
 	static public function hash($key)
 	{
-		$h = 0;
-		$key_len = strlen($key);
-		for($idx = 0; $idx < $key_len; ++$idx)
+		$hash = 0;
+		$len = strlen($key);
+		for($i = 0; $i < $len; ++$i)
 		{
-			$h = 11 * $h + ord($key[$idx]);
-			if($h > 4294967295)
-				$h &= 0x0FFFFFFFF;
+			$hash = 33 * $hash + ord($key[$i]);
+			if($hash > 4294967295)
+				$hash &= 0x0FFFFFFFF;
 		}
-		return $h;
+		return $hash;
 	}
 	
 	
 	public function __destruct()
 	{
-		if($this->shmId !== null)
+		if($this->shmId != null)
 		{
-			shmop_close($this->shmId);
+			@shmop_close($this->shmId);
 		}
 		
 	}
@@ -37,21 +37,21 @@ class CShmHashMap
 			return false;
 		}
 		
-		$this->shmId = shmop_open($key,'a',0,0);
+		$this->shmId = @shmop_open($key,'a',0,0);
 		
-		if($this->shmId !== false)
+		if($this->shmId != false)
 		{
 			if(!shmop_delete($this->shmId))
 			{
-				$this->errmsg = 'delete exist shm error';
+				$this->errmsg = 'delete exist shm 0x'.dechex($key).' error';
 				return false;
 			}
 		}
 		
 		$this->shmId = shmop_open($key,'c',0777,$size);
-		if($this->shmId === false)
+		if($this->shmId == false)
 		{
-			$this->errmsg = 'create shm error';
+			$this->errmsg = 'create shm 0x'.dechex($key).' error';
 			return false;
 		}
 		
@@ -67,7 +67,7 @@ class CShmHashMap
 		
 	}
 	
-	public function init($key)
+	public function attach($key)
 	{
 		
 		if($this->shmId != null)
@@ -81,11 +81,11 @@ class CShmHashMap
 			return false;
 		}
 		
-		$this->shmId = shmop_open($key,'a',0,0);
+		$this->shmId = @shmop_open($key,'a',0,0);
 
-		if($this->shmId === false)
+		if($this->shmId == false)
 		{
-			$this->errmsg = "open ".$key." shm error";
+			$this->errmsg = "attach 0x".dechex($key)." shm error";
 			return false;
 		}
 		
@@ -134,7 +134,7 @@ class CShmHashMap
 		$data['key'] = $key;
 		$data['value'] = $value;
 		
-		$wbuf = json_encode($data);
+		$wbuf = CUtils::encode($data);
 		$wlen = strlen($wbuf)+8;
 		
 		if($head['free']+$wlen > $head['bsize'])
@@ -172,7 +172,7 @@ class CShmHashMap
 				
 				$next = $adata['next1'];
 				$nlen = $adata['next2'];
-				$node =json_decode($adata['data'],true);
+				$node = CUtils::decode($adata['data']);
 				
 				if($node['key'] == $key)
 				{
@@ -229,7 +229,7 @@ class CShmHashMap
 		
 		if($next == null || $next == 0)
 		{
-			$this->errmsg = 'no data';
+			$this->errmsg = $key.' no data';
 			return false;
 		}
 		else
@@ -242,7 +242,7 @@ class CShmHashMap
 				
 				$next = $adata['next1'];
 				$nlen = $adata['next2'];
-				$node =json_decode($adata['data'],true);
+				$node = CUtils::decode($adata['data']);
 				if($node['key'] == $key)
 				{
 					return $node['value'];
@@ -250,7 +250,7 @@ class CShmHashMap
 				
 			}
 		}
-		$this->errmsg = 'not found';
+		$this->errmsg = $key.' not found';
 		return false;
 	}
 }

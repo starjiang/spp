@@ -45,7 +45,17 @@ abstract class CLBRedisModel extends CModel
 		$var = $this->toArray();
 		$rediss = $this->rediss();
 		
-		if(!$rediss[$this->getIndex($this->getKey())]->set($nskey,json_encode($var)))
+		$ret = false;
+		if($this->isCreate())
+		{
+			$ret = $rediss[$this->getIndex($this->getKey())]->setnx($nskey,CUtils::encode($var));
+		}
+		else
+		{
+			$ret = $rediss[$this->getIndex($this->getKey())]->set($nskey,CUtils::encode($var));
+		}
+		
+		if(!$ret)
 		{
 			throw new CModelException('save redis fail in '.get_class($this));
 		}
@@ -65,7 +75,7 @@ abstract class CLBRedisModel extends CModel
 		 }
 		 else
 		 {
-		 	$this->fromArray(json_decode($var,true))->setDirty(false);
+		 	$this->fromArray(CUtils::decode($var))->setDirty(false);
 		 	return $this;
 		 }
 
@@ -98,7 +108,7 @@ abstract class CLBRedisModel extends CModel
 				if($var !== false)
 				{
 					$obj=new $caller();
-					$obj->fromArray(json_decode($var,true))->setDirty(false);
+					$obj->fromArray(CUtils::decode($var))->setDirty(false);
 					$objs[$obj->getKey()] = $obj;
 				}
 			}

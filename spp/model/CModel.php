@@ -2,6 +2,7 @@
 abstract class CModel
 {
 	private $dirty = false;
+	private $create = false;
 	private $keyName = null;
 	
 	protected  function fields()
@@ -10,12 +11,23 @@ abstract class CModel
 		return $caller::$fields;
 	}
 	
+	public function isCreate()
+	{
+		return $this->create;
+	}
+	
 	public function isDirty()
 	{
 		return $this->dirty;
 	}
 	
-	public function setDirty($flag)
+	protected function setCreate($flag)
+	{
+		$this->create = $flag;
+		return $this;
+	}
+	
+	protected  function setDirty($flag)
 	{
 		$this->dirty = $flag;
 		return $this;
@@ -67,14 +79,25 @@ abstract class CModel
 		$fields = $this->fields();
 		$keyName = $this->keyName();
 		
-		if($this->$keyName == null || $this->$keyName == '' )
+		/*
+		if(!$this->isCreate())
 		{
-			throw new CModelException('primay key field '.$this->$keyName.' is not set in '.get_class($this));
+			if($this->$keyName == null || $this->$keyName == '' || $this->keyName == 0 )
+			{
+				throw new CModelException('primay key field '.$this->$keyName.' is not set in '.get_class($this));
+			}
 		}
-		
+		*/
 		foreach($fields as $key => $var)
 		{
-			$infos[$key] = $this->$key;
+			if(is_int($var))
+			{
+				$infos[$key] = (int)$this->$key;
+			}
+			else
+			{
+				$infos[$key] = $this->$key;
+			}
 		}
 		return $infos;
 	}
@@ -85,13 +108,13 @@ abstract class CModel
 		if($do =='get')
 		{
 			$field = substr($m,3);
-			$field[0]=strtolower($field[0]);
+			$field = self::toUnix($field);
 			return $this->$field;
 		}
 		else if ($do == 'set')
 		{
 			$field = substr($m,3);
-			$field[0]=strtolower($field[0]);
+			$field = self::toUnix($field);
 			if($this->$field !==  $a[0])
 			{
 				$this->$field = $a[0];
@@ -105,13 +128,40 @@ abstract class CModel
 		}
 	}
 	
-
+	private static function toUnix($str)
+	{
+		$len = strlen($str);
+		$out = '';
+		for($i=0;$i<$len;++$i)
+		{
+			$ch = ord($str[$i]);
+			if($ch>64 && $ch<91)
+			{
+				if($out != '')
+				{
+					$out.='_'.strtolower($str[$i]);
+				}
+				else 
+				{
+					$out.=strtolower($str[$i]);
+				}
+			}
+			else 
+			{
+				$out.=$str[$i];
+			}
+		}
+		return $out;
+	}
 	public function __get($field)
 	{
+		if(!array_key_exists($field,$this->fields()))
+		{
+			$field = self::toUnix($field);
+		}
+		
 		if(array_key_exists($field,$this->fields()))
 		{
-			//print_r($this->$field);
-			
 			if(!isset($this->$field) || $this->$field === null)
 			{
 				$fields = $this->fields();
@@ -128,11 +178,27 @@ abstract class CModel
 
 	public function __set($field, $value)
 	{
-		if(array_key_exists($field,$this->fields()))
+		$fields = $this->fields();
+		
+		if(!array_key_exists($field,$fields))
+		{
+			$field = self::toUnix($field);
+		}
+		
+		if(array_key_exists($field,$fields))
 		{
 			if(!isset($this->$field) || $this->$field !== $value)
 			{
-				$this->$field = $value;
+				$defaultValue = $fields[$field];
+
+				if(is_int($defaultValue))
+				{
+					$this->$field =(int)$value;
+				}
+				else 
+				{
+					$this->$field = (string)$value;
+				}
 				$this->dirty = true;
 			}
 		}
@@ -149,6 +215,14 @@ abstract class CModel
 	{
 		$caller = get_called_class();
 		return new $caller();
+	}
+	
+	public static function add()
+	{
+		$caller = get_called_class();
+		$obj = new $caller();
+		$obj->setCreate(true);
+		return $obj;
 	}
 	
 	abstract public  function save();

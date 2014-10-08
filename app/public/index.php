@@ -6,3 +6,4 @@ include SPP_PATH.'base/CSpp.php';
 include APP_PATH.'config/config.php';
 CSpp::getInstance()->init();
 CSpp::getInstance()->run();
+

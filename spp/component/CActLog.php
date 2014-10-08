@@ -13,7 +13,7 @@ class CActLog
 		if(self::$logHandler !=null)
 		{
 			$data['module']=$module;
-			$data['msg']=date('Y-m-d H:i:s')."|".$msg;
+			$data['msg']="[".date('Y-m-d H:i:s')."] ".$msg;
 			self::$logHandler->write($data);
 		}
 	}

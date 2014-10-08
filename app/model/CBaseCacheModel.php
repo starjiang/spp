@@ -10,7 +10,7 @@ class CBaseCacheModel extends CCacheModel
 		if($this->cache == null)
 		{
 			$caller = get_called_class();
-			$this->cache = new CMemCache(CConnMgr::init()->mem($caller::$cfgInfo));
+			$this->cache = new CMemCache(CConnMgr::init()->mem($caller::$cfg));
 		}
 		return $this->cache;
 	}
@@ -19,30 +19,30 @@ class CBaseCacheModel extends CCacheModel
 	{
 		$caller = get_called_class();
 		
-		if($caller::$cfgInfo['source']==null)
+		if($caller::$cfg['source']==null)
 			return null;
 
 		if($this->source == null)
-			$this->source = new CModelSource($caller::$cfgInfo['source']);
+			$this->source = new CModelSource($caller::$cfg['source']);
 		return $this->source;
 	}
 	
 	protected function persist()
 	{
 		$caller = get_called_class();
-		return (int)$caller::$cfgInfo['persist'];
+		return (int)$caller::$cfg['persist'];
 	}
 	
 	protected  function prefix()
 	{
 		$caller = get_called_class();
-		return $caller::$cfgInfo['prefix'];
+		return $caller::$cfg['prefix'];
 	}
 
 	protected function delayWrite()
 	{
 		$caller = get_called_class();
-		return (int)$caller::$cfgInfo['delay_write'];
+		return (int)$caller::$cfg['delay_write'];
 	}
 	
 	protected function modifyList()
@@ -50,10 +50,10 @@ class CBaseCacheModel extends CCacheModel
 		if($this->modifyList == null)
 		{
 			$caller		= get_called_class();
-			$host		= $caller::$cfgInfo['modify_host'];
-			$port		= $caller::$cfgInfo['modify_port'];
-			$prefix		= $caller::$cfgInfo['modify_prefix'];
-			$buckets	= $caller::$cfgInfo['modify_buckets'];
+			$host		= $caller::$cfg['modify_host'];
+			$port		= $caller::$cfg['modify_port'];
+			$prefix		= $caller::$cfg['modify_prefix'];
+			$buckets	= $caller::$cfg['modify_buckets'];
 			$this->modifyList = new CRedisModifyList(CConnMgr::init()->getRedis($host, $port), $prefix, $buckets);
 		}
 		return $this->modifyList;

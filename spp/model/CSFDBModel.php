@@ -21,14 +21,23 @@ abstract class CSFDBModel extends CModel
 	
 	public function save()
 	{
-		$sth = $this->pdo()->prepare('replace into '.$this->prefix().'(id,val) values (:key,:value);');
+		$sth = null;
+		if($this->isCreate())
+		{
+			$sth = $this->pdo()->prepare('insert into '.$this->prefix().'(id,val) values (:key,:value);');
+		}
+		else 
+		{
+			$sth = $this->pdo()->prepare('replace into '.$this->prefix().'(id,val) values (:key,:value);');
+				
+		}
 		
 		if(!$sth)
 		{
 			$error=$this->pdo()->errorInfo();
 			throw new CModelException($error[2]);
 		}
-		if($sth->execute(array('key'=>$this->getKey(),'value'=>json_encode($this->toArray()))) === false)
+		if($sth->execute(array('key'=>$this->getKey(),'value'=>CUtils::encode($this->toArray()))) === false)
 		{
 			$error=$sth->errorInfo();
 			throw new CModelException($error[2]);
@@ -87,7 +96,7 @@ abstract class CSFDBModel extends CModel
 			
 		if(is_array($row))
 		{
-			$this->fromArray(json_decode($row['val'],true))->setDirty(false);
+			$this->fromArray(CUtils::decode($row['val']))->setDirty(false);
 			return $this;
 		}
 	
@@ -137,9 +146,9 @@ abstract class CSFDBModel extends CModel
 			{
 				$obj = new $caller();
 
-				$obj->fromArray(json_decode($result['val'],true))->setDirty(false);
+				$obj->fromArray(CUtils::decode($result['val']))->setDirty(false);
 			
-				$objs[$result[$obj->keyName()]] = $obj;
+				$objs[$obj->getKey()] = $obj;
 			}
 			return $objs;
 		}

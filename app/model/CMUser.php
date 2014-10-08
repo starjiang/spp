@@ -1,16 +1,18 @@
 <?php
 class CMUser extends CBaseCacheModel
 {
-	public static $fields = array('id'=>0,'name'=>'','head'=>'');
-	public static $cfgInfo = array();
+	protected  static $fields = array('id'=>0,'name'=>'','brand'=>'','price'=>0,'style'=>'','category'=>'',
+			'color'=>'','detail_images'=>'','thumb_images'=>'','shop_url'=>'',
+	);
+	
+	protected static $cfg = null;
 	
 	public function __construct()
 	{
-		if(self::$cfgInfo == null)
+		if(self::$cfg == null)
 		{
-			self::$cfgInfo = CCReader::get('cfg.services.mem.'.get_called_class());
+			self::$cfg = CCReader::get('cfg.services.mem.'.get_called_class());
 		}
-		
-	}
 	
+	}
 }

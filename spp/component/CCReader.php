@@ -5,6 +5,7 @@ class CCReader
 	private static $shmSHashMap = null;
 	private static $shmSKey = null;
 	private static $shmMKey = null;
+	private static $errmsg = '';
 	private function __construct(){}
 
 	
@@ -17,7 +18,7 @@ class CCReader
 			CCReader::$shmMKey = $shmMKey;
 			
 			CCReader::$shmMHashMap = new CShmHashMap();
-			if(!CCReader::$shmMHashMap->init($shmMKey))
+			if(!CCReader::$shmMHashMap->attach($shmMKey))
 			{
 				CCReader::$shmMHashMap = null;
 				
@@ -29,6 +30,11 @@ class CCReader
 			}
 		}
 		return true;
+	}
+	
+	public static function getErrMsg()
+	{
+		return self::$errmsg;
 	}
 	
 	public static function mget($keys)
@@ -56,8 +62,9 @@ class CCReader
 		if(CCReader::$shmSHashMap === null)
 		{
 			CCReader::$shmSHashMap = new CShmHashMap();
-			if(!CCReader::$shmSHashMap->init($shmSKey))
+			if(!CCReader::$shmSHashMap->attach($shmSKey))
 			{
+				self::$errmsg = self::$shmSHashMap->getErrMsg();
 				CCReader::$shmSHashMap = null;
 				return false;
 			}

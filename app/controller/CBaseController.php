@@ -3,7 +3,11 @@ class CBaseController extends CController
 {
 	public  function  before()
 	{
-		CCReader::init(CConfig::$shmMKey, CConfig::$shmSKey);	
+		if(!CCReader::init(CConfig::$shmMKey, CConfig::$shmSKey))
+		{
+			throw new Exception('config init fail,'.CCReader::getErrMsg());
+		}	
+		return true;
 	}
 	
 	public function after()

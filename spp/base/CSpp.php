@@ -4,7 +4,6 @@ class CSpp
 {
 	private static $instance=null;
 	private $log = null;
-	private $logHandler = null;
 	
 	private function __construct(){}
 	
@@ -29,8 +28,8 @@ class CSpp
 
 		if(isset(CConfig::$log) && isset(CConfig::$log['path']) && isset(CConfig::$log['level']))
 		{
-			$this->logHandler= new CLogFileHandler(CConfig::$log['path'].date('Y-m-d').'.log');
-			$this->log = new CLog($this->logHandler,CConfig::$log['level']);
+			$logHandler= new CLogFileHandler(CConfig::$log['path'].date('Y-m-d').'.log');
+			$this->log = new CLog($logHandler,CConfig::$log['level']);
 		}
 
 	}
@@ -81,8 +80,9 @@ class CSpp
 			
 			$controller=new $conName;
 			
-			$controller->before();
-			$controller->$actName($e);
+			$next = $controller->before();
+			if($next)
+				$controller->$actName($e);
 			$controller->after();
 		}
 		else 
@@ -101,7 +101,7 @@ class CSpp
 class CController
 {
 	public $data = array();
-	public function before(){}
+	public function before(){ return true; }
 	public function after(){}
 	
 	public function render($template,$flush=true)
@@ -110,14 +110,23 @@ class CController
 		
 		extract($this->data);
 		
-		if(isset(CConfig::$tpl) && isset(CConfig::$tpl['path']))
+		try
 		{
-			include(CConfig::$tpl['path'].'/'.$template);
+			if(isset(CConfig::$tpl) && isset(CConfig::$tpl['path']))
+			{
+				include(CConfig::$tpl['path'].'/'.$template);
+			}
+			else
+			{
+				include($template);
+			}
 		}
-		else
+		catch (Exception $e)
 		{
-			include($template);
+			ob_end_clean();
+			throw $e;
 		}
+
 		
 		$content=ob_get_contents();
 		

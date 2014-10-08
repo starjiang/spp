@@ -7,19 +7,23 @@ class CXMLPaser
 	private $xml = null;
 	private $childnum = 0 ;
 	private $primes = array(12281,21841,38833,69061,122777,218357,388211,517619);
-		
+	private $errmsg = '';	
 	public function init($file)
 	{
-		$this->xml = simplexml_load_file($file);
+		$this->xml = @simplexml_load_file($file);
 
-		if($this->xml === false)
+		if($this->xml == false)
 		{
+			$this->errmsg = "load xml ".$file." fail";
 			return false;
 		}
 		
 		return true;
 	}
-	
+	public function getErrMsg()
+	{
+		return $this->errmsg;		
+	}
 	private function getBucketsNum()
 	{
 		$childNum = $this->countChild($this->xml);
@@ -56,6 +60,7 @@ class CXMLPaser
 		}
 		if(!$this->shmHashMap->create($shmSKey,$this->getBucketsNum(),$size))
 		{
+			$this->errmsg = $this->shmHashMap->getErrMsg();
 			return false;
 		}
 		
@@ -65,6 +70,7 @@ class CXMLPaser
 		
 		if(!$this->shmHashMap->create($shmMKey,$this->getBucketsNum(),$size))
 		{
+			$this->errmsg = $this->shmHashMap->getErrMsg();
 			return false;
 		}
 		

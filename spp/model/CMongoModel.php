@@ -15,12 +15,26 @@ abstract class CMongoModel extends CModel
 	{
 
 		$var = $this->toArray();
+		$key = $this->getKey();
+		if($key == '' || $key == 0 || $key == null)
+		{
+			throw new CModelException('primay key field '.$this->keyName().' is not set in '.get_class($this));
+		}
 		
-		$var['_id'] = $this->getKey();		
+		$var['_id'] = $key;		
 		
 		$collection = $this->prefix();
 		
-		if(!$this->mongodb()->$collection->save($var))
+		$ret = false;
+		if($this->isCreate())
+		{
+			$ret = $this->mongodb()->$collection->insert($var);
+		}
+		else
+		{
+			$ret = $this->mongodb()->$collection->save($var);
+		}
+		if(!$ret)
 		{
 			throw new CModelException('save mongodb fail in '.get_class($this));
 		}
@@ -31,13 +45,13 @@ abstract class CMongoModel extends CModel
 		 $this->setKey($key);
 		 $collection = $this->prefix();
 		 
-		 $RMmonodbs = $this->rmongodbs();
+		 $rmonodbs = $this->rmongodbs();
 		 $var = null;
 		 
-		 if($RMmonodbs!=null && count($RMmonodbs) > 0)
+		 if($rmonodbs!=null && count($rmonodbs) > 0)
 		 {
-		 	$index = rand() % count($RMmonodbs);
-		 	$mongodb = $RMmonodbs[$index];
+		 	$index = rand() % count($rmonodbs);
+		 	$mongodb = $rmonodbs[$index];
 		 	$var = $mongodb->$collection->findOne(array('_id' => $key));
 		 }
 		 else 
@@ -51,7 +65,7 @@ abstract class CMongoModel extends CModel
 		 }
 		 else
 		 {
-		 	$this->fromArray($var)->setDirty(false);
+		 	$this->fromArray($var)->setDirty(false)->setCreate(false);
 		 	return $this;
 		 }
 
@@ -65,14 +79,14 @@ abstract class CMongoModel extends CModel
 		$objs=array();
 		$collection = $callerObj->prefix();
 		
-		$RMmonodbs = $callerObj->rmongodbs();
+		$rmonodbs = $callerObj->rmongodbs();
 
 		$mongodb = null;
 		
-		if($RMmonodbs!=null && count($RMmonodbs) > 0)
+		if($rmonodbs!=null && count($rmonodbs) > 0)
 		{
-			$index = rand() % count($RMmonodbs);
-			$mongodb = $RMmonodbs[$index];
+			$index = rand() % count($rmonodbs);
+			$mongodb = $rmonodbs[$index];
 		}
 		else
 		{
@@ -85,7 +99,7 @@ abstract class CMongoModel extends CModel
 		{
 			$obj=new $caller();
 			$obj->setKey($result['_id']);
-			$obj->fromArray($result)->setDirty(false);
+			$obj->fromArray($result)->setDirty(false)->setCreate(false);
 			$objs[$obj->getKey()] = $obj;
 		}
 		return $objs;
@@ -97,7 +111,7 @@ abstract class CMongoModel extends CModel
 		return $this->mongodb()->$collection->remove(array('_id' => $key));
 	}
 
-	public static function query($where)
+	public static function query($where,$fields = null)
 	{
 		
 		$caller = get_called_class();
@@ -106,28 +120,34 @@ abstract class CMongoModel extends CModel
 		$objs=array();
 		$collection = $callerObj->prefix();
 		
-		$RMmonodbs = $callerObj->rmongodbs();
+		$rmonodbs = $callerObj->rmongodbs();
 		
 		$mongodb = null;
 		
-		if($RMmonodbs!=null && count($RMmonodbs) > 0)
+		if($rmonodbs!=null && count($rmonodbs) > 0)
 		{
-			$index = rand() % count($RMmonodbs);
-			$mongodb = $RMmonodbs[$index];
+			$index = rand() % count($rmonodbs);
+			$mongodb = $rmonodbs[$index];
 		}
 		else
 		{
 			$mongodb = $callerObj->mongodb();
 		}
 		
-		
-		$results = $mongodb->$collection->find($where);
+		if(!is_array($fields))
+		{
+			$results = $mongodb->$collection->find($query);
+		}
+		else
+		{
+			$results = $mongodb->$collection->find($query,$fields);
+		}
 		
 		foreach($results as $result)
 		{
 			$obj=new $caller();
 			$obj->setKey($result['_id']);
-			$obj->fromArray($result)->setDirty(false);
+			$obj->fromArray($result)->setDirty(false)->setCreate(false);
 			$objs[$obj->getKey()] = $obj;
 		}
 		return $objs;

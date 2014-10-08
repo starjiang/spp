@@ -24,6 +24,11 @@ class CModelSource implements ISource
 	
 	}
 
+	public function add($key, $val)
+	{
+		$model = $this->model;
+		return  $model::add()->setKey($key)->fromArray($val)->save();
+	}
 	
 	public function set($key,$val)
 	{

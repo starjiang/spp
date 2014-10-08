@@ -1,9 +1,10 @@
 <?php
 class CRUser extends CRedisModel
 {
-	public static $fields = array('id'=>0,'name'=>'','head'=>'');
+	protected  static $fields = array('id'=>0,'name'=>'','head'=>'');
+	
 	private static $redis = null;
-	private static $cfg = array();
+	protected static $cfg = null;
 	
 	public function __construct()
 	{
@@ -11,13 +12,7 @@ class CRUser extends CRedisModel
 		{
 			self::$cfg = CCReader::get('cfg.services.redis.'.get_called_class());
 		}
-	
 	}
-	protected  function prefix()
-	{
-		return 'user';
-	}
-	
 	protected function redis()
 	{
 		if(self::$redis == null)
@@ -26,5 +21,4 @@ class CRUser extends CRedisModel
 		}
 		return self::$redis;
 	}
-	
 }
