@@ -30,4 +30,4 @@ demo app 目录说明：
 
 框架命名规范t
 ===
-*  doc/spp框架命名规范.tx
+*  [doc/spp框架命名规范.txt|link]
