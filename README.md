@@ -10,8 +10,8 @@ spp/model 框架模型实现
 spp/base 框架核心文件目录
 spp/component 框架组件目录
 
-demo app 目录说明：
-app/public目录为网站根目录
+==demo app 目录说明：
+==app/public目录为网站根目录
 app/gconfig 配置中心配置文件
 app/config 框架配置
 app/script 业务常用的一些脚本，比如配置数据加载脚本
