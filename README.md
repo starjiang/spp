@@ -30,4 +30,5 @@ demo app 目录说明：
 
 框架命名规范t
 ===
-*  [doc/spp框架命名规范.txt|https://github.com/starjiang/spp/blob/master/doc/spp%E6%A1%86%E6%9E%B6%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.txt]
+*  [doc/spp框架命名规范.txt]
+*  https://github.com/starjiang/spp/blob/master/doc/spp%E6%A1%86%E6%9E%B6%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.txt
