@@ -12,7 +12,7 @@ class CValidate
 	*/
 	public static function isNumber($val)
 	{
-		if(preg_match("^[0-9]+$", $val))
+		if(preg_match("/^[0-9]+$/", $val))
 			return true;
 		return false;
 	}

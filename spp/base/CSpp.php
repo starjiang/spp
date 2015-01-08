@@ -47,18 +47,21 @@ class CSpp
 			
 			$conName=CUrlMgr::getInstance()->getController();
 			$actName=CUrlMgr::getInstance()->getAction();
-			
-			$controller=new $conName;  
+			$controller = new $conName;  
 			
 			if(!method_exists ($controller, $actName))
 			{
 				throw new CSPPException('can not find '.$actName.'() in class '.$conName,CError::ERR_NOT_FOUND_METHOD);
 			}
-			
+
 			$next = $controller->before();
 			
 			if($next)
-				$controller->$actName();
+			{
+				$method = new ReflectionMethod($conName, $actName);
+				$method->invokeArgs($controller, CUrlMgr::getInstance()->getParams());
+				//$controller->$actName();
+			}
 			
 			$controller->after();
 		}
@@ -245,15 +248,44 @@ class CUrlMgr
 			else
 			{
 				$this->pathInfo=explode('/',  $pathArray[0]);
+				
+				/*
 				if(count($this->pathInfo) > 2)
 				{
 					throw new CSPPException("route url invalid",CError::ERR_URL_ROUTER);
 				}
+				*/
 			}
 		}
 
 	}
+	
+	public function getParam($index)
+	{
+		if(count($this->pathInfo) < 3+$index)
+		{
+			return null;
+		}
+		else
+		{
+			return $this->pathInfo[2+$index];
+		}
+	}
+	
+	public function getParams()
+	{
+		if(count($this->pathInfo) > 2)
+		{
+			return array_slice($this->pathInfo, 2);
+		}
+		else
+		{
+			return array();
+		}
 
+	}
+	
+	
 	public function getAction()
 	{
 		if(count($this->pathInfo) == 1)

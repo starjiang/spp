@@ -26,7 +26,20 @@ abstract class CDBModel extends CModel
 		{
 			unset($fields[$this->keyName()]);
 		}
-		$list = implode(',',$fields);
+		
+		$list = '';
+		foreach($fields as $field)
+		{
+			if($list == '')
+			{
+				$list = "`".$field."`";
+			}
+			else 
+			{
+				$list.=",`".$field."`";
+			}
+		}
+		
 		return $list;
 	}
 
@@ -55,7 +68,7 @@ abstract class CDBModel extends CModel
 		unset($fields[$this->keyName()]);
 		foreach ($fields as $key)
 		{
-			$keys[]=$key.'=:'.$key;
+			$keys[]= '`'.$key.'`=:'.$key;
 		}
 	
 		$list = implode(',', $keys);
@@ -80,7 +93,7 @@ abstract class CDBModel extends CModel
 		{
 			if($update)
 			{
-				$sth = $this->pdo()->prepare('update '.$this->prefix().' set '.$this->getUpdateFieldsList().' where '.$this->keyName().'='.$this->getKey());
+				$sth = $this->pdo()->prepare('update '.$this->prefix().' set '.$this->getUpdateFieldsList().' where `'.$this->keyName().'`='.$this->getKey());
 			}	
 			else 
 			{
@@ -107,7 +120,7 @@ abstract class CDBModel extends CModel
 	
 	public function delete($key)
 	{
-		$sth = $this->pdo()->prepare('delete from '.$this->prefix().' where '.$this->keyName().' = :id');
+		$sth = $this->pdo()->prepare('delete from '.$this->prefix().' where `'.$this->keyName().'` = :id');
 		
 		if(!$sth)
 		{
@@ -140,7 +153,7 @@ abstract class CDBModel extends CModel
 			$pdo = $this->pdo();
 		}
 				
-		$sth = $pdo->prepare('select '.$this->getFeildsList().' from '.$this->prefix().' where '.$this->keyName().' = :id');
+		$sth = $pdo->prepare('select '.$this->getFeildsList().' from '.$this->prefix().' where `'.$this->keyName().'` = :id');
 		
 		if(!$sth)
 		{
@@ -182,7 +195,7 @@ abstract class CDBModel extends CModel
 			$pdo = $callerObj->pdo();
 		}
 		
-		$sth = $pdo->prepare("select ".$callerObj->getFeildsList()." from ".$callerObj->prefix()." where ".$callerObj->keyName()." in (".$callerObj->getIdList($keys).")");
+		$sth = $pdo->prepare("select ".$callerObj->getFeildsList()." from ".$callerObj->prefix()." where `".$callerObj->keyName()."` in (".$callerObj->getIdList($keys).")");
 		
 		if(!$sth)
 		{

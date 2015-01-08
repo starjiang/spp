@@ -33,13 +33,13 @@ abstract class CCacheModel extends CModel
 	{
 		$keyName = $this->keyName();
 	
-		if($this->$keyName == null || $this->$keyName == '' || $this->$keyName == 0)
+		if($this->$keyName == null || $this->$keyName == '')
 			throw new ErrorException('the primay key field '.$keyName.' in '.get_class($this).' not setted');
 	
 		if($this->prefix() != '')
-			return $this->prefix()."_".$this->$keyName;
+			return $this->prefix().".".$this->$keyName;
 		else
-			return strtolower(get_class($this))."_".$this->$keyName;
+			return strtolower(get_class($this)).".".$this->$keyName;
 	}
 			
 	public function save()

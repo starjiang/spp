@@ -1,0 +1,5 @@
+*.log
+*.xml
+.project
+.buildpath
+.settings

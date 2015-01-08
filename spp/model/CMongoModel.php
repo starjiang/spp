@@ -16,7 +16,7 @@ abstract class CMongoModel extends CModel
 
 		$var = $this->toArray();
 		$key = $this->getKey();
-		if($key == '' || $key == 0 || $key == null)
+		if($key == '' || $key == null)
 		{
 			throw new CModelException('primay key field '.$this->keyName().' is not set in '.get_class($this));
 		}
