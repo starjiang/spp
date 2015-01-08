@@ -4,6 +4,7 @@ class CShmHashMap
 	private $shmId = null;
 	private $errmsg = '';
 	private $head = null;
+	private static $avFlag = false;
 	
 	static public function hash($key)
 	{
@@ -18,6 +19,13 @@ class CShmHashMap
 		return $hash;
 	}
 	
+	public function __construct()
+	{
+		if(function_exists("av_encode"))
+		{
+			self::$avFlag = true;
+		}
+	}
 	
 	public function __destruct()
 	{
@@ -131,10 +139,10 @@ class CShmHashMap
 		$intKey = CShmHashMap::hash($key);
 		
 		$data = array();
-		$data['key'] = $key;
-		$data['value'] = $value;
+		$data['k'] = $key;
+		$data['v'] = $value;
 		
-		$wbuf = CUtils::encode($data);
+		$wbuf = self::encode($data);
 		$wlen = strlen($wbuf)+8;
 		
 		if($head['free']+$wlen > $head['bsize'])
@@ -160,21 +168,18 @@ class CShmHashMap
 		}
 		else 
 		{
-
 			$node = array();
 						
 			while($next!=null && $next !=0)
 			{
 				$buf = shmop_read($this->shmId,$next,$nlen);
 				$offset = $next;
-				
 				$adata = unpack('I2next/a*data', $buf);
-				
 				$next = $adata['next1'];
 				$nlen = $adata['next2'];
-				$node = CUtils::decode($adata['data']);
+				$node = self::decode($adata['data']);
 				
-				if($node['key'] == $key)
+				if($node['k'] == $key)
 				{
 					$this->errmsg = $key.' exsit';
 					return false;
@@ -203,6 +208,31 @@ class CShmHashMap
 		return $this->setHead($head);
 		
 	}
+	
+	public static function encode($data)
+	{
+		if(self::$avFlag)
+		{
+			return av_encode($data);
+		}
+		else
+		{
+			return CUtils::encode($data);
+		}
+	}
+	
+	public static function decode($data)
+	{
+		if(self::$avFlag)
+		{
+			return av_decode($data);
+		}
+		else
+		{
+			return CUtils::decode($data);
+		}
+	}
+	
 	
 	public function get($key)
 	{
@@ -234,7 +264,6 @@ class CShmHashMap
 		}
 		else
 		{
-		
 			while($next!=null && $next !=0)
 			{
 				$buf = shmop_read($this->shmId,$next,$nlen);
@@ -242,10 +271,11 @@ class CShmHashMap
 				
 				$next = $adata['next1'];
 				$nlen = $adata['next2'];
-				$node = CUtils::decode($adata['data']);
-				if($node['key'] == $key)
+				$node = self::decode($adata['data']);
+
+				if($node['k'] == $key)
 				{
-					return $node['value'];
+					return $node['v'];
 				}
 				
 			}
