@@ -285,6 +285,32 @@ class CUrlMgr
 
 	}
 	
+	private static function  toCamel($str,$class = false)
+	{
+		$len = strlen($str);
+		$out = '';
+		for($i=0;$i<$len;++$i)
+		{
+			$ch = $str[$i];
+			if($class && $i==0)
+			{
+				$out.=strtoupper($ch);
+			}
+			else
+			{
+				if($ch == '_')
+				{
+					$i++;
+					$out.=strtoupper($str[$i]);
+				}
+				else
+				{
+					$out.=$ch;
+				}
+			}
+		}
+		return $out;
+	}
 	
 	public function getAction()
 	{
@@ -296,7 +322,7 @@ class CUrlMgr
 		{
 			if($this->pathInfo[1] == '')
 				return 'indexAction';
-			return $action=$this->pathInfo[1].'Action';
+			return $action = self::toCamel($this->pathInfo[1]).'Action';
 		}
 	}
 	
@@ -304,8 +330,8 @@ class CUrlMgr
 	{
 		if($this->pathInfo[0] == '') 
 			return 'CIndexController';
-		$action = 'C'.strtoupper($this->pathInfo[0][0]).substr($this->pathInfo[0],1).'Controller';
-		return $action;
+		$conn = 'C'.self::toCamel($this->pathInfo[0],true).'Controller';
+		return $conn;
 	}
 }
 
