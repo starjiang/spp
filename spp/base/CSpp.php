@@ -1,13 +1,14 @@
 <?php
+namespace spp\base;
+use spp\component\CLog;
+use spp\component\loghandler\CLogFileHandler;
 
 class CSpp
 {
 	private static $instance=null;
 	private $log = null;
-	
+	private $controllers = null;
 	private function __construct(){}
-	
-
 	
 	public static function getInstance()
 	{
@@ -26,12 +27,12 @@ class CSpp
 
 		CRuntime::init(); 
 
-		if(isset(CConfig::$log) && isset(CConfig::$log['path']) && isset(CConfig::$log['level']))
+		if(isset(\Config::$log) && isset(\Config::$log['path']) && isset(\Config::$log['level']))
 		{
-			$logHandler= new CLogFileHandler(CConfig::$log['path'].date('Y-m-d').'.log');
-			$this->log = new CLog($logHandler,CConfig::$log['level']);
+			$logHandler= new CLogFileHandler(\Config::$log['path'].date('Y-m-d').'.log');
+			$this->log = new CLog($logHandler,\Config::$log['level']);
 		}
-
+		$this->controllers = str_replace(".","\\", \Config::$controllers);
 	}
 	
 	public function getLogger()
@@ -47,6 +48,7 @@ class CSpp
 			
 			$conName=CUrlMgr::getInstance()->getController();
 			$actName=CUrlMgr::getInstance()->getAction();
+			$conName = $this->controllers."\\".$conName;
 			$controller = new $conName;  
 			
 			if(!method_exists ($controller, $actName))
@@ -58,14 +60,13 @@ class CSpp
 			
 			if($next)
 			{
-				$method = new ReflectionMethod($conName, $actName);
+				$method = new \ReflectionMethod($conName, $actName);
 				$method->invokeArgs($controller, CUrlMgr::getInstance()->getParams());
-				//$controller->$actName();
 			}
 			
 			$controller->after();
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			$this->processException($e);
 		}
@@ -75,11 +76,12 @@ class CSpp
 	public function processException($e)
 	{
 		
-		if(isset(CConfig::$error) && isset(CConfig::$error['cls']) && isset(CConfig::$error['method']))
+		if(isset(\Config::$error) && isset(\Config::$error['handler']))
 		{
-			
-			$conName = CConfig::$error['cls'];
-			$actName = CConfig::$error['method'];
+			$info = explode("::",\Config::$error['handler']);
+			$conName = $info[0];
+			$actName = $info[1];
+			$conName = $this->controllers."\\".$conName;
 			
 			$controller=new $conName;
 			
@@ -107,17 +109,15 @@ class CController
 	public function before(){ return true; }
 	public function after(){}
 	
-	public function render($template,$flush=true)
+	public function render($template)
 	{
-		ob_start();
-		
 		extract($this->data);
 		
 		try
 		{
-			if(isset(CConfig::$tpl) && isset(CConfig::$tpl['path']))
+			if(isset(\Config::$tpl) && isset(\Config::$tpl['path']))
 			{
-				include(CConfig::$tpl['path'].'/'.$template);
+				include(\Config::$tpl['path'].'/'.$template);
 			}
 			else
 			{
@@ -126,22 +126,8 @@ class CController
 		}
 		catch (Exception $e)
 		{
-			ob_end_clean();
 			throw $e;
 		}
-
-		
-		$content=ob_get_contents();
-		
-		if($flush)
-		{
-			ob_end_flush();		
-		}
-		else
-		{
-			ob_end_clean();
-		}
-		return $content;
 	}
 }
 
@@ -150,43 +136,34 @@ class CRuntime
 {
 	static function init()
 	{
-		if(isset(CConfig::$error) && isset(CConfig::$error['display']))
+		if(isset(\Config::$error) && isset(\Config::$error['display']))
 		{
-			ini_set('display_errors',CConfig::$error['display']);
+			ini_set('display_errors',\Config::$error['display']);
 		}
 		
-		if(isset(CConfig::$error) && isset(CConfig::$error['level']))
+		if(isset(\Config::$error) && isset(\Config::$error['level']))
 		{
-			error_reporting(CConfig::$error['level']);
+			error_reporting(\Config::$error['level']);
 		}
 		
-		ini_set('date.timezone','Asia/Shanghai');
+		ini_set('date.timezone',  \Config::$timezone);
 		
-		$path[] = SPP_PATH."/model";
-		$path[] = SPP_PATH."/model/cache";
-		$path[] = SPP_PATH."/component";
-		$path[] = SPP_PATH."/component/loghandler";
-		$path[] = SPP_PATH."/base";
-
-		if(isset(CConfig::$path) && is_array(CConfig::$path))
-		{
-			$path = array_merge($path,CConfig::$path);
-		}
-
-		
+		$path[] = SPP_PATH;
+		$path[] = APP_PATH;
+	
 		set_include_path(get_include_path() . PATH_SEPARATOR . implode(PATH_SEPARATOR,$path));
 		
-		spl_autoload_register(array('CRuntime', 'loadClass'));
+		spl_autoload_register(array('spp\base\CRuntime', 'loadClass'));
 	}
 	
 	public static function loadClass($class)
 	{
-	
-		$fileName = $class.'.php';
-		include ($fileName);
+		$path = str_replace('\\', '/', $class);
+		$path.='.php';
+		include($path);
 		if(!class_exists($class) && !interface_exists($class))
 		{
-			throw new CSPPException("Can not find class ".$class." in file ".$fileName,CError::ERR_NOT_FOUND_CLASS);
+			throw new CSPPException("Can not find class ".$class." in file ".$path,CError::ERR_NOT_FOUND_CLASS);
 		}
 	}
 	
@@ -233,7 +210,6 @@ class CUrlMgr
 
 			$pathUri =substr($_SERVER['REQUEST_URI'],strlen(dirname($_SERVER["SCRIPT_NAME"])));
 		}
-		
 		if(strlen($pathUri) > 0)
 		{
 			if($pathUri[0] == '/')
@@ -241,23 +217,24 @@ class CUrlMgr
 				
 			$pathArray =explode('?',$pathUri);
 			
-			if($pathArray[0] == '')
+			if(\Config::$urls['/'.$pathArray[0]] != null)
 			{
-	
+				$pathArray[0] = \Config::$urls['/'.$pathArray[0]];
 			}
-			else
+			
+			if($pathArray[0] != '')
 			{
 				$this->pathInfo=explode('/',  $pathArray[0]);
-				
-				/*
-				if(count($this->pathInfo) > 2)
-				{
-					throw new CSPPException("route url invalid",CError::ERR_URL_ROUTER);
-				}
-				*/
 			}
 		}
-
+		else
+		{
+			if(\Config::$urls['/'] != null)
+			{
+				$pathArray[0] = \Config::$urls['/'];
+				$this->pathInfo=explode('/',  $pathArray[0]);
+			}
+		}
 	}
 	
 	public function getParam($index)
@@ -335,7 +312,7 @@ class CUrlMgr
 	}
 }
 
-class CSPPException extends ErrorException
+class CSPPException extends \ErrorException
 {
 	
 }

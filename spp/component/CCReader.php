@@ -1,4 +1,6 @@
 <?php
+namespace spp\component;
+
 class CCReader
 {
 	private static $shmMHashMap = null;

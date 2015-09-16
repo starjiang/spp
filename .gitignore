@@ -3,3 +3,4 @@
 .project
 .buildpath
 .settings
+/nbproject/private/

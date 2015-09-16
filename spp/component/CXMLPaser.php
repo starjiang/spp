@@ -1,4 +1,5 @@
 <?php
+namespace spp\component;
 
 class CXMLPaser
 {

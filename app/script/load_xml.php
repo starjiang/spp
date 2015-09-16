@@ -1,6 +1,6 @@
 <?php
-
 include 'init.php';
+use spp\component\CXMLPaser;
 
 if(count($argv) < 2)
 {
@@ -18,7 +18,7 @@ if(!$paser->init($filename))
 	return;
 }
 
-if(!$paser->toShm(CConfig::$shmMKey,CConfig::$shmSKey))
+if(!$paser->toShm(Config::$mshmkey,Config::$sshmkey))
 {
 	echo $paser->getErrMsg()."\n";
 	return;

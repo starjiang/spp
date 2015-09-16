@@ -1,8 +1,9 @@
 <?php
-
-define("SPP_PATH",__DIR__."/../../spp/");
-define("APP_PATH",__DIR__."/../../app/");
-include SPP_PATH.'base/CSpp.php';
-include __DIR__.'/config.php';
+define("SPP_PATH",__DIR__."/../../");
+define("APP_PATH",__DIR__."/../../");
+use spp\base\CSpp;
+use spp\component\CCReader;
+include SPP_PATH.'spp/base/CSpp.php';
+include APP_PATH.'app/config/Config.php';
 CSpp::getInstance()->init();
-CCReader::init(CConfig::$shmMKey, CConfig::$shmSKey);
+CCReader::init(Config::$mshmkey, Config::$sshmkey);

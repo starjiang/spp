@@ -16,7 +16,7 @@ model类，字段命名
 model类可以通过getId(),setId(),getHeadPic(),getUpdateTime()来访问
 
 json 输出字段命名
-采用uinix命名法 如 {"ret":0,"msg":"ok","info":{"id":1001,"name":"abcd","head_pic":"http://www.abc.com/a.jpg","update_time":"2014-10-10 00:00:00"}}
+采用unix命名法 如 {"ret":0,"msg":"ok","info":{"id":1001,"name":"abcd","head_pic":"http://www.abc.com/a.jpg","update_time":"2014-10-10 00:00:00"}}
 
 controller 命名
 C+控制器名+Controller 如CIndexController CLoginController

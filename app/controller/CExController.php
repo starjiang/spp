@@ -1,8 +1,12 @@
 <?php
-class CErrController extends CController
+
+namespace app\controller;
+use spp\base\CController;
+
+class CExController extends CController
 {
 
-	public function errHandler($e)
+	public function processAction($e)
 	{	
 		echo "<b>Exception from errorHandler:</b><br/>";
 		echo "<b>message: </b>".$e->getMessage().", <b>code: </b>".$e->getCode()."<br/>";

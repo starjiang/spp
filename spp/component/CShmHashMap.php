@@ -1,4 +1,6 @@
 <?php
+namespace spp\component;
+
 class CShmHashMap
 {
 	private $shmId = null;

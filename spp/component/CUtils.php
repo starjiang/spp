@@ -1,4 +1,6 @@
 <?php
+namespace spp\component;
+
 class CUtils
 {
 	public static function json_encode($var)

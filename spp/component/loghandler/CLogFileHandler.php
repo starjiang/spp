@@ -1,4 +1,6 @@
 <?php
+namespace spp\component\loghandler;
+
 class CLogFileHandler implements ILogHandler
 {
 	private $handle = null;

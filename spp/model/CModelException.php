@@ -1,5 +1,6 @@
 <?php
-class CModelException extends ErrorException
+namespace spp\model;
+class CModelException extends \ErrorException
 {
 
 }

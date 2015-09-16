@@ -1,103 +1,60 @@
 <?php
+namespace app\controller;
+use spp\model\CDbMapper;
+
 class CIndexController extends CBaseController
 {
-
-    const RECOMMENDATION_DEFAULT_LIMIT = 10;
-    const LIST_PAGE_LIMIT = 50;
-
+	public function __construct() {
+				
+	}
+	
 	public function indexAction()
 	{
+		$user = CDbMapper::getInstance("user")->findByPk(2,['id','name','email']);
+		$this->data['user']= $user;
 		$this->render('index/index.html');
+		
 	}
 	
-	public function listAction()
+	public function getUserListAction()
 	{
-		$offset =(int) ($_GET['offset'] ?: 0);
-        $limit = CIndexController::LIST_PAGE_LIMIT;
-
-        $params = $this->extractQueryParams();
+		$users = CDbMapper::getInstance("user")->find();
+		var_dump($users);
 		
-		$products = $this->queryProducts($params, $offset, $limit);
+		$users = CDbMapper::getInstance("user")->where('age','>',20)->where('sex','=',1)->orderBy('age','desc')->orderBy('name','asc')->limit(1,1)->find(['name']);
+		var_dump($users);
 		
-		$this->data['products'] = $products;
-		$this->data['limit'] = $limit;
-        $this->data['offset'] = $offset;
-        $this->data['category'] = CProduct::getCategories(10);
-        $this->data['brand'] = CProduct::getBrands(10);
-        $this->data['color'] = CProduct::getColors(10);
-        $this->data['size'] = CProduct::getSizes(5);
-
-		$this->render('index/list.php', true);
-
+		$users = CDbMapper::getInstance("user")->whereIn('id',[1,2,3])->orderBy('age','desc')->orderBy('name','asc')->limit(10)->find(['*']);
+		
+		var_dump($users);
+		
+		echo CDbMapper::getInstance("user")->whereNotIn('id',[1,2])->orderBy('age','desc')->orderBy('name','asc')->count();
+		
+		var_dump(CDbMapper::getInstance("user")->distinct('name'));
 	}
 	
-	public function detailAction()
+	public function insertUserAction()
 	{
-		$id = (int)$_GET['id'];
-		$product = CProduct::model()->get($id);
+		$user = new \stdClass();
+		$user->id = 13;
+		$user->name = 'starjiang\'1222';
+		$user->email = '82776315@qq.com';
+		$user->sex = 1;
+		//echo self::$userDao->insert($user);
 		
-		if($product == null)
-		{
-			throw new Exception("product id can not found", 404);
-		}
-		
-		$images = explode("|", $product->getDetailImages());
-		$product->setDetailImages($images);
-
-		$this->data['product'] = $product;
-        $this->data['recommendation'] =
-            $this->recommend($id, CIndexController::RECOMMENDATION_DEFAULT_LIMIT);
-
-		$this->render('index/detail.php', true);
+		CDbMapper::getInstance("user")->updateByPk($user);
+		CDbMapper::getInstance("user")->save($user);
+		CDbMapper::getInstance("user")->deleteByPk(1);
+		CDbMapper::getInstance("user")->where('id','=',1)->delete();
 	}
+
 	
-	public function outputAction()
+	public function exceptAction(){
+		throw  new \Exception("Exception:exceptAction cause");
+	}	
+
+	public function infoAction()
 	{
-        $category = CProduct::getColors(10);
-        var_dump($category);
+		phpinfo();
 	}
-
-    private function extractQueryParams()
-    {
-        $params = array();
-        $expected = array("color", "size", "brand", "category");
-
-        foreach ($expected as $column)
-        {
-            // TODO: check and clean values got
-            if (!empty($_GET[$column])) {
-                $params[$column] = $_GET[$column];
-            }
-        }
-
-        return $params;
-
-    }
-
-    private function recommend($id, $limit)
-    {
-        // TODO, real recommendation
-        $product = CProduct::model()->get($id);
-        $condition = sprintf("WHERE brand = \"%s\" ORDER BY RAND() LIMIT %d",
-            $product->getBrand(), (int)$limit);
-        $recommended_products = CProduct::query($condition);
-        return $recommended_products;
-    }
-
-    private function queryProducts($params, $offset, $limit)
-    {
-
-        $joiner = function($k, $v)
-        {
-            return $k . '="' . $v . '"';
-        };
-
-        $condition = join(" AND ", array_map($joiner, array_keys($params), $params));
-        $condition = !empty($condition) ? "WHERE " . $condition : "";
-        return CProduct::query(
-            sprintf("%s ORDER BY id LIMIT %d, %d", $condition, $offset, $limit)
-        );
-
-    }
-
 }

@@ -1,4 +1,6 @@
 <?php
+namespace spp\component\loghandler;
+
 class CScribeHandler implements ILogHandler
 {
 	const TYPE_MODULE = 1;

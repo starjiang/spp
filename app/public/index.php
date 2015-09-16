@@ -1,9 +1,12 @@
 <?php
-define("SPP_PATH",__DIR__."/../../spp/");
-define("APP_PATH",__DIR__."/../../app/");
+define("SPP_PATH",__DIR__."/../../");
+define("APP_PATH",__DIR__."/../../");
 
-include SPP_PATH.'base/CSpp.php';
-include APP_PATH.'config/config.php';
+use spp\base\CSpp;
+
+include SPP_PATH.'spp/base/CSpp.php';
+include APP_PATH.'app/config/Config.php';
+
 CSpp::getInstance()->init();
 CSpp::getInstance()->run();
 
