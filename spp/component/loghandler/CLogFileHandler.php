@@ -8,6 +8,7 @@ class CLogFileHandler implements ILogHandler
 	public function __construct($file = '')
 	{
 		$this->handle=fopen($file,'a');
+		@chmod($file, 0777);
 	}
 	
 	public function write($msg)

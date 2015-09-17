@@ -7,11 +7,13 @@ class CBaseController extends CController
 {
 	public  function  before()
 	{
-		if(!CCReader::init(\Config::$mshmkey, \Config::$sshmkey))
+		if(isset(\Config::$xmlconfig) && \Config::$xmlconfig['enable'])
 		{
-			throw new \Exception('config init fail,'.CCReader::getErrMsg());
+			if(!CCReader::init(\Config::$xmlconfig['mkey'], \Config::$xmlconfig['skey']))
+			{
+				throw new \Exception('config init fail,'.CCReader::getErrMsg());
+			}
 		}
-		
 		return true;
 	}
 	

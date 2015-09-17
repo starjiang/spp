@@ -18,7 +18,7 @@ if(!$paser->init($filename))
 	return;
 }
 
-if(!$paser->toShm(Config::$mshmkey,Config::$sshmkey))
+if(!$paser->toShm(Config::$xmlconfig['mkey'],Config::$xmlconfig['skey']))
 {
 	echo $paser->getErrMsg()."\n";
 	return;

@@ -2,21 +2,8 @@
 <cfg>
 <services>
 	<db>
-		<CProduct prefix='product' host="127.0.0.1" port="3306" user="root" pwd="" db="fashion"/>
+		<product table='product' host="127.0.0.1" port="3306" user="root" pwd="" db="fashion"/>
 	</db>
-	<mem>
-		<CMUser hosts="127.0.0.1,127.0.0.1" ports="11211,11211" persist="1" source="CProduct" delay_write="0" prefix='user' modify_host="127.0.0.1" modify_port="6379" modify_prefix="product" modify_buckets="4"  />
-		<CMUser1 hosts="127.0.0.1,127.0.0.1" ports="11211,11211" persist="1" source="CDBUser" delay_write="0" prefix='user' modify_host="127.0.0.1" modify_port="6379" modify_prefix="user" modify_buckets="4"  />
-	</mem>
-	<mongo>
-		<CMGUser host="127.0.0.1" port="27017" db='zjhdb' rhosts='127.0.0.1,127.0.0.1' rports='27017,27017' rdbs='zjhdb,zjhdb' />
-		<CLBMGUser hosts='127.0.0.1,127.0.0.1' ports='27017,27017' dbs='zjhdb,zjhdb1' />
-	</mongo>
-	<redis>
-		<CRUser host="127.0.0.1" port="6379" />
-		<CLBRUser hosts="127.0.0.1" ports="6379" />
-	</redis>
-	
 </services>
 <sys>
 	<host>127.0.0.1</host>

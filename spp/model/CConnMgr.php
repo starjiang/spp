@@ -44,14 +44,13 @@ class CConnMgr
 		return $this->getPdo($info['dsn'],$info['user'],$info['pwd'],$info['options']);
 	}	
 		
-	public function getMongo($host,$port,$db)
+	public function getMongo($dsn,$options,$db)
 	{
-		$key = $host.$port.$db;
+		$key = $dsn."/".$db;
 		if($this->mongos[$key] == null)
 		{
-			$mongo =  new \Mongo("mongodb://".$host.":".$port."/".$db,array('timeout'=>1000));
-			$this->mongos[$key] = $mongo->selectDB($db);
-		
+			$mongoClient = new \MongoClient($dsn,$options);
+			$this->mongos[$key] = $mongoClient->selectDb($db);;
 		}
 		return $this->mongos[$key];
 	}
@@ -64,7 +63,7 @@ class CConnMgr
 			return null;
 		}
 				
-		return $this->getMongo($info['host'],$info['port'],$info['db']);
+		return $this->getMongo($info['dsn'],$info['options'],$info['db']);
 	}
 		
 	public function getMem($hosts,$ports)

@@ -1,7 +1,7 @@
 <?php
 namespace app\controller;
 use spp\model\CDbMapper;
-
+use app\model\UserDao;
 class CIndexController extends CBaseController
 {
 	public function __construct() {
@@ -10,7 +10,13 @@ class CIndexController extends CBaseController
 	
 	public function indexAction()
 	{
+		
 		$user = CDbMapper::getInstance("user")->findByPk(2,['id','name','email']);
+		
+		$users = UserDao::newInstance()->getUserList();
+		
+		var_dump($users);
+		
 		$this->data['user']= $user;
 		$this->render('index/index.html');
 		
