@@ -1,8 +1,9 @@
 <?php
+namespace spp\model\cache;
 interface ICache
 {
-	public function add($key,$val);
-	public function set($key,$val);
+	public function set($key,$val,$expire);
+	public function mget($keys);
 	public function get($key);
 	public function delete($key);
 	

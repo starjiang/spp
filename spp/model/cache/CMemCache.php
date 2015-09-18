@@ -1,24 +1,37 @@
 <?php
+namespace spp\model\cache;
+use spp\model\cache\ICache;
+use spp\model\CConnMgr;
 class CMemCache implements ICache
 {
 	private $memcached = null;
 	
 	public function __construct($memcached = null)
 	{
-		$this->memcached = $memcached;
+		if($memcached == null)
+		{
+			$this->memcached = CConnMgr::getInstance()->mem(\Config::$cache['memcache']);
+		}
+		else
+		{
+			$this->memcached = $memcached;
+		}
 	}
 	
-	public function set($key,$val)
+	public function setMemcache($memcache)
 	{
-
-		return $this->memcached->set($key,$val,MEMCACHE_COMPRESSED);
-	}
+		$this->memcached = $memcache;
+	}	
 	
-	public function add($key,$val)
+	public function set($key,$val,$expire = 0)
 	{
-		return $this->memcached->add($key,$val,MEMCACHE_COMPRESSED);
+		return $this->memcached->set($key,$val,MEMCACHE_COMPRESSED,$expire);
 	}
 	
+	public function mget($keys)
+	{
+		return $this->memcached->get($keys);
+	}
 	public function get($key)
 	{
 		return $this->memcached->get($key);

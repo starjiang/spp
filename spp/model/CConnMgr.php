@@ -65,22 +65,31 @@ class CConnMgr
 				
 		return $this->getMongo($info['dsn'],$info['options'],$info['db']);
 	}
-		
-	public function getMem($hosts,$ports)
+	
+	static function getMemKey($infos)
 	{
-		$key = $hosts.$ports;
+		$key = '';
+		foreach($infos as $info)
+		{
+			$key.=$info['host'].$info['port'];
+		}
 		
+		return $key;
+	}
+	public function getMem($infos)
+	{
+		$key = static::getMemKey($infos);
 		if($this->mems[$key] == null)
 		{
 			$memcache = new \Memcache();
-			$ahosts = explode(',',$hosts);
-			$aports = explode(',',$ports);
 		
-			$len = count($ahosts);
-		
-			for($i=0;$i<$len;$i++)
+			foreach($infos as $info)
 			{
-				$memcache->addServer($ahosts[$i],(int)$aports[$i],true);
+				$info['persist'] = (isset($info['persist'])  ? $info['persist'] : true);
+				$info['weight'] = (isset($info['weight'])  ? $info['weight'] : 100);
+				$info['timeout'] = (isset($info['timeout'])  ? $info['timeout'] : 1);
+				
+				$memcache->addServer($info['host'],$info['port'],$info['persist'],$info['weight'],$info['timeout']);
 			}
 			$this->mems[$key] = $memcache;
 		}
@@ -88,23 +97,27 @@ class CConnMgr
 		return $this->mems[$key];
 	}
 	
-	public function mem(Array $info)
+	public function mem(Array $infos)
 	{
-		if($info ==false)
+		if($infos ==false)
 		{
 			return null;
 		}
-		return $this->getMem($info['hosts'], $info['ports']);
+		return $this->getMem($infos);
 	}
 
-	public function getRedis($host,$port)
+	public function getRedis($host,$port,$persist,$timeout)
 	{
 		$key = $host.$port;
 		
 		if($this->rediss[$key] == null)
 		{
 			$redis = new \Redis();
-			$redis->pconnect($host,$port,1);
+			if($persist)
+				$redis->pconnect($host,$port,$timeout);
+			else
+				$redis->connect($host,$port,$timeout);
+			
 			$this->rediss[$key] =$redis;
 		}
 		
@@ -118,7 +131,7 @@ class CConnMgr
 			return null;
 		}
 		
-		return $this->getRedis($info['host'], $info['port']);
+		return $this->getRedis($info['host'], $info['port'],$info['persist'],$info['timeout']);
 
 	}
 }

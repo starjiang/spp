@@ -1,4 +1,7 @@
 <?php
+namespace spp\model\cache;
+use spp\model\cache\IModifyList;
+
 class CRedisModifyList implements IModifyList
 {
 	private $redis = null;

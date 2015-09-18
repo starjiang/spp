@@ -1,8 +1,9 @@
 <?php
 namespace spp\model;
 use spp\model\CConnMgr;
+use spp\model\CMapper;
 
-class CMongoMapper
+class CMongoMapper implements CMapper
 {
 	static $op = ['>'=>'$gt','>='=>'$gte','<'=>'$lt','<='=>'$lte',
 		'='=>'=','in'=>'$in','not in'=>'$nin'

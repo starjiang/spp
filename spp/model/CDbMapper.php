@@ -1,8 +1,8 @@
 <?php
 namespace spp\model;
 use spp\model\CConnMgr;
-
-class CDbMapper
+use spp\model\CMapper;
+class CDbMapper implements CMapper
 {
 	static $op = ['>'=>'>','>='=>'>=','<'=>'<','<='=>'<=',
 		'='=>'=','like'=>'like','is'=>'is','is not'=>'is not'
