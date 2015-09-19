@@ -1,29 +1,12 @@
-在 localtion / 下加入
 
-if (!-e $request_filename) {
-	rewrite  ^/(.*)$  /index.php/$1  last;
-	break;
+location / {
+	try_files $uri $uri/ /index.php?$args;
 }
 
-------------------- PHP 环境变量调整
-location ~ \.php { # php后面没有$
-    root           /home/starjiang/spp/demo;
-    fastcgi_pass   127.0.0.1:9000;
-    fastcgi_index  index.php;
-
-    set $real_script_name $fastcgi_script_name;
-
-    if ($fastcgi_script_name ~ "^(.+?\.php)(/.+)$") {
-	set $real_script_name $1;
-    }
-
-
-    include        fastcgi_params; # 这句话放在下面两句前面
-    
-    fastcgi_param SCRIPT_FILENAME $document_root$real_script_name;
-    fastcgi_param SCRIPT_NAME $real_script_name;
-
-    #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-
-
+location ~ \.php$ {
+	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	#fastcgi_pass 127.0.0.1:9000;
+	fastcgi_pass unix:/var/run/php5-fpm.sock;
+	fastcgi_index index.php;
+	include fastcgi_params;
 }

@@ -7,7 +7,7 @@ if(count($argv) < 2)
 	echo "usage:".$argv[0]." xml \n";
 	return;	
 }
-
+	
 echo "load [".$argv[1]."] to shm\n";
 
 $filename = $argv[1];

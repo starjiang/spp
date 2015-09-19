@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<services>
-	<db>
-		<product table='product' host="127.0.0.1" port="3306" user="root" pwd="" db="fashion"/>
-	</db>
-</services>

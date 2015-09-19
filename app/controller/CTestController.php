@@ -4,10 +4,24 @@ use spp\model\CMongoMapper;
 use spp\model\CDbMapper;
 use app\model\UserDao;
 use spp\model\cache\Cache;
+use spp\base\CSpp;
+use spp\component\CCReader;
+
 class CTestController extends CBaseController
 {
 	public function indexAction()
 	{
+		echo microtime()."<br/>";
+		$keys = CCReader::get('cfg.services.users');
+		var_dump(CCReader::mget($keys));
+		$keys = CCReader::get('cfg.services.users');
+		var_dump(CCReader::mget($keys));
+		$keys = CCReader::get('cfg.services.users');
+		var_dump(CCReader::mget($keys));
+		$keys = CCReader::get('cfg.services.users');
+		var_dump(CCReader::mget($keys));
+		echo microtime()."<br>";
+		CSpp::getInstance()->getLogger()->debug('indexAction called');
 		$user = CDbMapper::getInstance("user")->findByPk(2,['id','name','email']);
 		$this->data['user']= $user;
 		$this->render('index/index.html');

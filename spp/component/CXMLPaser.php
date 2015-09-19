@@ -9,8 +9,17 @@ class CXMLPaser
 	private $childnum = 0 ;
 	private $primes = array(12281,21841,38833,69061,122777,218357,388211,517619);
 	private $errmsg = '';	
-	public function init($file)
+	private $size  = 10*1024*1024;
+	public function init($file,$size = 10*1024*1024)
 	{
+		$this->size = $size;
+		$fp = fopen($file,'r');
+		$stats = fstat($fp);
+		if ($stats['size'] > $this->size)
+		{
+			throw new \Exception("share memory size less than xmlconfig file size");
+		}
+		
 		$this->xml = @simplexml_load_file($file);
 
 		if($this->xml == false)
@@ -53,13 +62,13 @@ class CXMLPaser
 	}
 	
 	
-	public function toShm($shmMKey,$shmSKey,$size = 10000000)
+	public function toShm($shmMKey,$shmSKey)
 	{
 		if($this->shmHashMap === null)
 		{
 			$this->shmHashMap = new CShmHashMap();
 		}
-		if(!$this->shmHashMap->create($shmSKey,$this->getBucketsNum(),$size))
+		if(!$this->shmHashMap->create($shmSKey,$this->getBucketsNum(),$this->size))
 		{
 			$this->errmsg = $this->shmHashMap->getErrMsg();
 			return false;
@@ -69,7 +78,7 @@ class CXMLPaser
 		
 		$this->shmHashMap = new CShmHashMap();
 		
-		if(!$this->shmHashMap->create($shmMKey,$this->getBucketsNum(),$size))
+		if(!$this->shmHashMap->create($shmMKey,$this->getBucketsNum(),$this->size))
 		{
 			$this->errmsg = $this->shmHashMap->getErrMsg();
 			return false;

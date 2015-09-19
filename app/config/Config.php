@@ -35,14 +35,14 @@ class Config
 	
 	//default rule: /user/info =>  CUserController::infoAction()
 	public static $urls = [
-		'/home' =>'index/index', //CIndexController::homeAction()
+		'/home' =>'index/home', //CIndexController::homeAction()
 		'/user/info' =>'index/index'
 	];
 		
 	 //xml config saved into share memory,use php shmop extension
 	public static $xmlconfig = [
-		'enable'=>false,
-		'mkey' => 0x1112,//the master shared memory key
+		'enable'=>true,
+		'mkey' => 0x2222,//the master shared memory key
 		'skey' => 0x2223,//the slave shared memory key
 	];
 	
