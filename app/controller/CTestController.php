@@ -63,10 +63,15 @@ class CTestController extends CBaseController
 	
 	public function mongoAction()
 	{
-		CMongoMapper::getInstance('user')->distinct('name');
+		var_dump(CMongoMapper::getInstance('user')->distinct('name'));
 
-		var_dump(CMongoMapper::getInstance("user")->findByPk(1));
-		$users = CMongoMapper::getInstance("user")->where('_id','<',100)->where('name','=','starjiang4','or')->orderBy('_id','desc')->limit(10,1)->find(['name']);
+		
+		var_dump(CMongoMapper::getInstance("user")->findByPk(12));
+		
+		$users = CMongoMapper::getInstance("user")->where('_id','<',100)->where('_id','>',2)->where('email','=','82776315@qq.com1')->where('name','=','starjiang4','or')->orderBy('_id','desc')->limit(10)->find(['name','email']);
+		
+		echo  CMongoMapper::getInstance("user")->where('_id','<',100)->where('_id','>',2)->where('email','=','82776315@qq.com1')->where('name','=','starjiang4','or')->count();
+
 		
 		foreach ($users as $user)
 		{

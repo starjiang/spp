@@ -105,7 +105,7 @@ class CMongoMapper implements CMapper
 				}
 				else
 				{
-					$condition[$column] = [$op=>$value];
+					$this->condition[$column][$op] = $value;
 				}
 			}
 			else
@@ -131,14 +131,14 @@ class CMongoMapper implements CMapper
 		if(count($this->order) == 0)
 		{
 			if($order == 'desc')
-				$this->order = [$column=>0];
+				$this->order = [$column=>-1];
 			else 
 				$this->order = [$column=>1];
 		}
 		else
 		{
 			if($order == 'desc')
-				$this->order[$column] = 0;
+				$this->order[$column] = -1;
 			else
 				$this->order[$column] = 1;
 		}
@@ -153,7 +153,7 @@ class CMongoMapper implements CMapper
 		$collection = $this->collection;
 	
 		$cursors = null;
-		
+
 		if($this->count!=0 && $this->offset != 0)
 		{
 			$cursors = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order)->limit($this->count)->skip($this->offset);
@@ -193,7 +193,7 @@ class CMongoMapper implements CMapper
 		
 		$collection = $this->collection;
 		
-		return $this->mongo->$collection->find($this->condition,$columns)->count();
+		return $this->mongo->$collection->find($this->condition)->count();
 	}
 	
 	public function distinct($column)

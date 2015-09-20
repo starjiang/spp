@@ -67,6 +67,15 @@ class CRedisZSet
 		}
 	}
 	
+	public function index($member)
+	{
+		return $this->redis->zRank($this->prefix,$member);
+	}
+	public function score($member)
+	{
+		return $this->redis->zScore($this->prefix,$member);
+	}
+	
 	public function count($start,$end)
 	{
 		return $this->redis->zCount($this->prefix,$start,$end);
