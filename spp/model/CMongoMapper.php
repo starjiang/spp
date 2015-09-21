@@ -70,6 +70,11 @@ class CMongoMapper implements CMapper
 		
 		$collection = $this->collection;
 		$obj = $this->mongo->$collection->findOne(array('_id' => $id),$columns);
+		
+		if(is_array($obj))
+		{
+			$obj = (Object)$obj;
+		}
 		return $obj;
 	}
 	
@@ -147,23 +152,29 @@ class CMongoMapper implements CMapper
 		}
 		$collection = $this->collection;
 	
-		$rows = false;
+		$cursors = null;
 		
 		if($this->count!=0 && $this->offset != 0)
 		{
-			$rows = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order)->limit($this->count)->skip($this->offset);
+			$cursors = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order)->limit($this->count)->skip($this->offset);
 		}
 		else if($this->count !=0 && $this->offset == 0)
 		{
-			$rows = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order)->limit($this->count);
+			$cursors = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order)->limit($this->count);
 		}
 		else if($this->count ==0 && $this->offset != 0)
 		{
-			$rows = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order)->skip($this->offset);
+			$cursors = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order)->skip($this->offset);
 		}
 		else
 		{
-			$rows = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order);
+			$cursors = $this->mongo->$collection->find($this->condition,$columns)->sort($this->order);
+		}
+		
+		$rows = [];
+		foreach ($cursors as $row)
+		{
+			$rows[] = (Object)$row;
 		}
 		
 		$this->condition = [];

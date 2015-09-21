@@ -28,6 +28,8 @@ class Config
 		'options'=>['connectTimeoutMS'=>1000,'connect'=>true]
 	];
 	
+	public static $redis = ['host'=>'127.0.0.1','port'=>6379,'timeout'=>1,'persist'=>true];
+	
 	public static $cache = [
 		'memcache' => [['host'=>'127.0.0.1','port'=>11211,'persist'=>true,'weight'=>100,'timeout'=>1],['host'=>'127.0.0.1','port'=>11211]],
 		'redis'=>['host'=>'127.0.0.1','port'=>6379,'timeout'=>1,'persist'=>true]

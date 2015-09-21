@@ -6,6 +6,7 @@ use app\model\UserDao;
 use spp\model\cache\Cache;
 use spp\base\CSpp;
 use spp\component\CCReader;
+use spp\model\CRedisMapper;
 
 class CTestController extends CBaseController
 {
@@ -32,10 +33,10 @@ class CTestController extends CBaseController
 	{
 		$users = CDbMapper::getInstance("user")->find();
 		var_dump($users);
-		
+
 		$users = CDbMapper::getInstance("user")->where('age','>',20)->where('sex','=',1)->orderBy('age','desc')->orderBy('name','asc')->limit(1,1)->find(['name']);
 		var_dump($users);
-		
+
 		$users = CDbMapper::getInstance("user")->whereIn('id',[1,2,3])->orderBy('age','desc')->orderBy('name','asc')->limit(10)->find(['*']);
 		
 		var_dump($users);
@@ -119,5 +120,17 @@ class CTestController extends CBaseController
 		Cache::getInstance('redis')->set('name','starjiang');
 		echo Cache::getInstance('redis')->get('name');
 		var_dump(Cache::getInstance('redis')->mget(['name','name1']));
+	}
+	
+	public function redisAction()
+	{
+		$user = new \stdClass();
+		$user->name = 'starjiang';
+		$user->email = '82776315@qq.com';
+		$user->id = 12;
+		CRedisMapper::getInstance('user')->set('12',$user);
+		var_dump(CRedisMapper::getInstance('user')->get('12'));
+		echo "<br>";
+		var_dump(CRedisMapper::getInstance('user')->mget(['11','12','13']));
 	}
 }

@@ -69,7 +69,6 @@ class CDbMapper implements CMapper
 	
 	public function where($column,$op,$value,$bool='and')
 	{
-		var_dump(self::checkOperater($op));
 		if(!self::checkOperater($op) || !self::checkBoolean($bool))
 		{
 			throw new CModelException("invalid op or bool param");
