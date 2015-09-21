@@ -7,7 +7,7 @@ use spp\model\cache\Cache;
 use spp\base\CSpp;
 use spp\component\CCReader;
 use spp\model\CRedisMapper;
-
+use spp\model\CRedisZSet;
 class CTestController extends CBaseController
 {
 	public function indexAction()
@@ -132,5 +132,14 @@ class CTestController extends CBaseController
 		var_dump(CRedisMapper::getInstance('user')->get('12'));
 		echo "<br>";
 		var_dump(CRedisMapper::getInstance('user')->mget(['11','12','13']));
+	}
+	
+	public function zsetAction()
+	{
+		CRedisZSet::getInstance('user')->add(10,'user1');
+		CRedisZSet::getInstance('user')->add(13,'user2');
+		CRedisZSet::getInstance('user')->add(11,'user4');
+		var_dump(CRedisZSet::getInstance('user')->getByOffset(0,-1));
+		var_dump(CRedisZSet::getInstance('user')->getByScore(11,10));
 	}
 }

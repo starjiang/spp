@@ -44,7 +44,7 @@ class CRedisZSet
 	{
 		$this->redis->zDelete($member);
 	}
-	public function getByOffset($start,$end,$order='')
+	public function getByOffset($start,$end,$order='desc')
 	{
 		if($order == 'desc')
 		{
