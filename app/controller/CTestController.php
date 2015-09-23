@@ -8,6 +8,7 @@ use spp\base\CSpp;
 use spp\component\CCReader;
 use spp\model\CRedisMapper;
 use spp\model\CRedisZSet;
+use spp\model\CRedisHash;
 class CTestController extends CBaseController
 {
 	public function indexAction()
@@ -118,13 +119,13 @@ class CTestController extends CBaseController
 	
 	public function cacheAction()
 	{
-		Cache::getInstance()->set('name','helloworld');
-		echo Cache::getInstance()->get('name');
-		var_dump(Cache::getInstance()->mget(['name','name1']));
+		Cache::getInstance('user')->set('name','helloworld');
+		echo Cache::getInstance('user')->get('name');
+		var_dump(Cache::getInstance('user')->mget(['name','name1']));
 		
-		Cache::getInstance('redis')->set('name','starjiang');
-		echo Cache::getInstance('redis')->get('name');
-		var_dump(Cache::getInstance('redis')->mget(['name','name1']));
+		Cache::getInstance('user','redis')->set('name','starjiang');
+		echo Cache::getInstance('user','redis')->get('name');
+		var_dump(Cache::getInstance('user','redis')->mget(['name','name1']));
 	}
 	
 	public function redisAction()
@@ -144,7 +145,21 @@ class CTestController extends CBaseController
 		CRedisZSet::getInstance('user')->add(10,'user1');
 		CRedisZSet::getInstance('user')->add(13,'user2');
 		CRedisZSet::getInstance('user')->add(11,'user4');
+		echo CRedisZSet::getInstance('user')->size();
+		echo CRedisZSet::getInstance('user')->index('user2');
+		echo CRedisZSet::getInstance('user')->score('user2');
 		var_dump(CRedisZSet::getInstance('user')->getByOffset(0,-1));
 		var_dump(CRedisZSet::getInstance('user')->getByScore(11,10));
+	}
+	
+	public function hashAction()
+	{
+		CRedisHash::getInstance('login.1')->set('id',12);
+		CRedisHash::getInstance('login.1')->set('token','1111111111111111');
+		echo CRedisHash::getInstance('login.1')->get('token');
+		var_dump(CRedisHash::getInstance('login.1')->all());
+		CRedisHash::getInstance('login.1')->mset(['id'=>1,'token'=>'222222222222222']);
+		var_dump(CRedisHash::getInstance('login.1')->mget(['id','token']));
+
 	}
 }

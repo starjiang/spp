@@ -5,9 +5,11 @@ use spp\model\CConnMgr;
 class CRedisCache implements ICache
 {
 	private $redis = null;
-	
-	public function __construct($redis = null)
+	private $prefix = '';
+	public function __construct($prefix,$redis = null)
 	{
+		$this->prefix = $prefix;
+		
 		if($redis == null)
 		{
 			$this->redis = CConnMgr::getInstance()->redis(\Config::$cache['redis']);
@@ -20,29 +22,35 @@ class CRedisCache implements ICache
 	
 	public function set($key,$val,$expire = 3600)
 	{
-		return $this->redis->setex($key,$expire,$val);
+		return $this->redis->setex($this->prefix.'.'.$key,$expire,$val);
 	}
 	
 	public function mget($keys)
 	{
-		$values = $this->redis->getMultiple($keys);
+		$ids = [];
+		foreach($keys as $key)
+		{
+			$ids[$this->prefix.'.'.$key] = $key;
+		}
+		
+		$values = $this->redis->getMultiple(array_keys($ids));
 		$size = 0;
 		$map = array();
-		foreach ($keys as $key)
+		foreach ($ids as $key =>$id)
 		{
 			if($values[$size] != false)
-				$map[$key] = $values[$size];
+				$map[$id] = $values[$size];
 			$size++;
 		}
 		return $map;
 	}
 	public function get($key)
 	{
-		return $this->redis->get($key);
+		return $this->redis->get($this->prefix.'.'.$key);
 	}
 	
 	public function delete($key)
 	{
-		return $this->redis->delete($key);
+		return $this->redis->delete($this->prefix.'.'.$key);
 	}
 }

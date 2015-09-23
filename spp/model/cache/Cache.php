@@ -3,23 +3,24 @@ namespace spp\model\cache;
 class Cache
 {
 	static $cacheSets = array();
-	static public function getInstance($type = 'memcache')
+	static public function getInstance($prefix,$type = 'memcache')
 	{
+		$key = $type.'.'.$prefix;
 		if($type == 'memcache')
 		{
-			if(static::$cacheSets[$type] == null)
+			if(static::$cacheSets[$key] == null)
 			{
-				static::$cacheSets[$type] = new \spp\model\cache\CMemCache();
+				static::$cacheSets[$key] = new \spp\model\cache\CMemCache($prefix);
 			}
-			return static::$cacheSets[$type];
+			return static::$cacheSets[$key];
 		}
 		else if($type == 'redis')
 		{
-			if(static::$cacheSets[$type] == null)
+			if(static::$cacheSets[$key] == null)
 			{
-				static::$cacheSets[$type] = new \spp\model\cache\CRedisCache();
+				static::$cacheSets[$key] = new \spp\model\cache\CRedisCache($prefix);
 			}
-			return static::$cacheSets[$type];
+			return static::$cacheSets[$key];
 		}
 		else
 		{

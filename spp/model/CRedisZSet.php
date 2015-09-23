@@ -83,7 +83,7 @@ class CRedisZSet
 	
 	public function size()
 	{
-		return $this->redis->zSize();
+		return $this->redis->zSize($this->prefix);
 	}
 }
 
