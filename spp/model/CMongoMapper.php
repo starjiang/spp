@@ -6,7 +6,7 @@ use spp\model\CMapper;
 class CMongoMapper implements CMapper
 {
 	static $op = ['>'=>'$gt','>='=>'$gte','<'=>'$lt','<='=>'$lte',
-		'='=>'=','in'=>'$in','not in'=>'$nin'
+		'='=>'=','like'=>'like','in'=>'$in','not in'=>'$nin'
 	];
 	private static $instances = array();
 	private $collection = null;
@@ -91,6 +91,10 @@ class CMongoMapper implements CMapper
 		{
 			if($op == '=')	{
 				$this->condition = [$column=>$value];
+			}
+			else if($op == 'like')
+			{
+				$this->condition = [$column=>'/'.$value.'/'];
 			}
 			else {
 				$this->condition = [$column => [$op=>$value]];
