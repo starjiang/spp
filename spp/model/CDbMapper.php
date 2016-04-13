@@ -280,7 +280,7 @@ class CDbMapper implements CMapper
 			}
 			else 
 			{
-				($column != '*') ? ($list .= ",`".$column."`" ): ($list .=','.column);
+				($column != '*') ? ($list .= ",`".$column."`" ): ($list .=','.$column);
 			}
 		}
 		return $list;
