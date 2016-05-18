@@ -15,7 +15,7 @@ class CDbMapper implements CMapper
 	private $limit = '';
 	private $order = '';
 	protected function __construct($table,$pk = 'id') {
-		$this->table = $table;
+		$this->table = "`".$table."`";
 		$this->pk = $pk;
 		if(isset(\Config::$db)){
 			$this->pdo = CConnMgr::getInstance()->pdo(\Config::$db);
@@ -104,6 +104,22 @@ class CDbMapper implements CMapper
 		return $this;
 	}
 	
+	public function findOne($columns = ['*']) {
+		if($this->pdo == null){
+			throw new CModelException("pdo is null");
+		}
+		$this->limit(1);
+		$query = 'select '.$this->getSelectList($columns).' from '.$this->table.  $this->condition.  $this->order.  $this->limit;
+		$sth = $this->pdo->prepare($query);
+		$sth->execute();
+		
+		$obj = $sth->fetch(\PDO::FETCH_OBJ);
+		$this->condition = '';
+		$this->order = '';
+		$this->limit = '';
+		
+		return $obj;
+	}
 	public function find($columns = ['*'])
 	{
 		if($this->pdo == null){
@@ -113,7 +129,6 @@ class CDbMapper implements CMapper
 		$query = 'select '.$this->getSelectList($columns).' from '.$this->table.  $this->condition.  $this->order.  $this->limit;
 		$sth = $this->pdo->prepare($query);
 		$sth->execute();
-		
 		$objs = $sth->fetchAll(\PDO::FETCH_OBJ);
 		$this->condition = '';
 		$this->order = '';
@@ -138,6 +153,42 @@ class CDbMapper implements CMapper
 		$this->order = '';
 		$this->limit = '';
 		return $obj->total;
+	}
+	
+	public function max($column)
+	{
+		if($this->pdo == null){
+			throw new CModelException("pdo is null");
+		}
+		
+		$query = 'select max('.$column.') as max from '.$this->table.  $this->condition.  $this->order.  $this->limit;
+
+		$sth = $this->pdo->prepare($query);
+		$sth->execute();
+		
+		$obj = $sth->fetch(\PDO::FETCH_OBJ);
+		$this->condition = '';
+		$this->order = '';
+		$this->limit = '';
+		return $obj->max;
+	}
+	
+	public function min($column)
+	{
+		if($this->pdo == null){
+			throw new CModelException("pdo is null");
+		}
+		
+		$query = 'select min('.$column.') as min from '.$this->table.  $this->condition.  $this->order.  $this->limit;
+
+		$sth = $this->pdo->prepare($query);
+		$sth->execute();
+		
+		$obj = $sth->fetch(\PDO::FETCH_OBJ);
+		$this->condition = '';
+		$this->order = '';
+		$this->limit = '';
+		return $obj->min;
 	}
 	
 	public function distinct($column)
@@ -280,7 +331,7 @@ class CDbMapper implements CMapper
 			}
 			else 
 			{
-				($column != '*') ? ($list .= ",`".$column."`" ): ($list .=','.column);
+				($column != '*') ? ($list .= ",`".$column."`" ): ($list .=','.$column);
 			}
 		}
 		return $list;

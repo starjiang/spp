@@ -258,6 +258,11 @@ class CValidate
 		 }
 	}
 	
+        public static function isIntMoney($val)
+        {
+            return preg_match("^[1-9][0-9]{0,}$", $val);
+        }
+        
 	public static function isMoney($val)
 	{
 		 if(preg_match("^[0-9]{1,}$", $val))

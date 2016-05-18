@@ -6,7 +6,10 @@ interface CMapper{
 	public function limit($count,$offset);
 	public function orderBy($column,$order);
 	public function find($columns);
+	public function findOne($columns);
 	public function count();
+	public function max($column);
+	public function min($column);
 	public function distinct($column);
 	public function whereIn($column,$values,$bool);
 	public function whereNotIn($column,$values,$bool);

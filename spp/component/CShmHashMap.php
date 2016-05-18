@@ -10,15 +10,16 @@ class CShmHashMap
 	
 	static public function hash($key)
 	{
-		$hash = 0;
-		$len = strlen($key);
-		for($i = 0; $i < $len; ++$i)
-		{
-			$hash = 33 * $hash + ord($key[$i]);
-			if($hash > 4294967295)
-				$hash &= 0x0FFFFFFFF;
-		}
-		return $hash;
+	    /*
+	    $hash = 0;
+	    $len = strlen($key);
+	    for($i = 0; $i < $len; ++$i)
+	    {
+		    $hash = 33 * $hash + ord($key[$i]);
+		    if($hash > 4294967295)
+			    $hash &= 0x0FFFFFFFF;
+	    }*/
+	    return crc32($key);
 	}
 	
 	public function __construct()
@@ -69,8 +70,8 @@ class CShmHashMap
 		$head['size'] = 0;
 		$head['buckets'] = $buckets;
 		$head['start'] = 24;
-		$head['data'] = $buckets*8+24;
-		$head['free'] = $buckets*8+24;
+		$head['data'] = $buckets*4+24;
+		$head['free'] = $buckets*4+24;
 		
 		return $this->setHead($head);
 
@@ -106,8 +107,7 @@ class CShmHashMap
 	{
 		return $this->errmsg;
 	}
-	
-	
+
 	private function getHead()
 	{
 		
@@ -139,67 +139,62 @@ class CShmHashMap
 	{
 		$head = $this->head;
 		$intKey = CShmHashMap::hash($key);
-		
-		$data = array();
-		$data['k'] = $key;
-		$data['v'] = $value;
-		
-		$wbuf = self::encode($data);
-		$wlen = strlen($wbuf)+8;
-		
+
+                $vardata = self::encode($value);
+                $newkeylen = strlen($key);
+                $newvarlen = strlen($vardata);
+                
+                $wlen = 12+$newkeylen+$newvarlen;
+                
 		if($head['free']+$wlen > $head['bsize'])
 		{
 			$this->errmsg = 'no memory';
 			return false;
-		}		
+		}
 		$index  = $intKey % $head['buckets'];
-		$buf = shmop_read($this->shmId,$head['start']+(8*$index),8);
-		
-		$anext = unpack('I2',$buf);
-		
+		$buf = shmop_read($this->shmId,$head['start']+(4*$index),4);
+		$anext = unpack('I',$buf);
+
 		$next = $anext[1];
-		$nlen = $anext[2];
-		
 		$offset = 0;
 		
 		if($next == null || $next == 0)
 		{
 			$next = $head['free'];
-			$nlen = $wlen;
-			$offset = $head['start']+(8*$index);
+			$offset = $head['start']+(4*$index);
 		}
 		else 
 		{
-			$node = array();
-						
 			while($next!=null && $next !=0)
 			{
-				$buf = shmop_read($this->shmId,$next,$nlen);
+				$buf = shmop_read($this->shmId,$next,12);
 				$offset = $next;
-				$adata = unpack('I2next/a*data', $buf);
-				$next = $adata['next1'];
-				$nlen = $adata['next2'];
-				$node = self::decode($adata['data']);
-				
-				if($node['k'] == $key)
+				$adata = unpack('I3', $buf);
+				$nnext = $adata[1];
+				$keylen = $adata[2];
+                                $varlen = $adata[3];
+
+				$buf = shmop_read($this->shmId,$next+12,$keylen+$varlen);
+                                $adata = unpack('a'.$keylen.'key/a'.$varlen."value", $buf);
+                                $nextkey = $adata['key'];
+				if($nextkey == $key)
 				{
 					$this->errmsg = $key.' exsit';
 					return false;
 				}
+				$next = $nnext;
 			}
 			
-			$next=$head['free'];
-			$nlen=$wlen;
-	
+			$next = $head['free'];
 		}
-
-		if(!shmop_write($this->shmId,pack('IIa*',0,0,$wbuf),$head['free']))
+		
+		if(!shmop_write($this->shmId, pack('IIIa'.$newkeylen.'a'.$newvarlen,0,$newkeylen,$newvarlen,$key,$vardata),$head['free']))
 		{
 			$this->errmsg = 'write node error';
 			return false;
 		}
-		
-		if(!shmop_write($this->shmId,pack('II',$next,$nlen),$offset))
+
+		if(!shmop_write($this->shmId,pack('I',$next),$offset))
 		{
 			$this->errmsg = 'write nlen error';
 			return false;
@@ -251,13 +246,9 @@ class CShmHashMap
 			
 		$index  = $intKey % $head['buckets'];
 	
-		$buf = shmop_read($this->shmId,$head['start']+(8*$index),8);
-		
-		$anext = unpack('I2',$buf);
-
+		$buf = shmop_read($this->shmId,$head['start']+(4*$index),4);
+		$anext = unpack('I',$buf);
 		$next = $anext[1];
-		$nlen = $anext[2];
-		$node = array();
 		
 		if($next == null || $next == 0)
 		{
@@ -268,18 +259,22 @@ class CShmHashMap
 		{
 			while($next!=null && $next !=0)
 			{
-				$buf = shmop_read($this->shmId,$next,$nlen);
-				$adata = unpack('I2next/a*data', $buf);
+				$buf = shmop_read($this->shmId,$next,12);
+				$adata = unpack('I3', $buf);
 				
-				$next = $adata['next1'];
-				$nlen = $adata['next2'];
-				$node = self::decode($adata['data']);
+				$nnext = $adata[1];
+                                $keylen = $adata[2];
+                                $varlen = $adata[3];
+                                
+				$buf = shmop_read($this->shmId,$next+12,$keylen+$varlen);
+                                
+                                $adata = unpack('a'.$keylen."key/a".$varlen."value", $buf);
 
-				if($node['k'] == $key)
+				if($adata['key'] == $key)
 				{
-					return $node['v'];
+                                    return self::decode($adata['value']);
 				}
-				
+				$next = $nnext;
 			}
 		}
 		$this->errmsg = $key.' not found';

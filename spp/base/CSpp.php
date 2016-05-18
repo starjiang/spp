@@ -2,6 +2,8 @@
 namespace spp\base;
 use spp\component\CLog;
 use spp\component\loghandler\CLogFileHandler;
+use spp\component\CUtils;
+
 
 class CSpp
 {
@@ -33,6 +35,7 @@ class CSpp
 			$this->log = new CLog($logHandler,\Config::$log['level']);
 		}
 		$this->controllers = str_replace(".","\\", \Config::$controllers);
+                
 	}
 	
 	public function getLogger()
@@ -47,21 +50,25 @@ class CSpp
 			CUrlMgr::getInstance()->init();
 			
 			$conName=CUrlMgr::getInstance()->getController();
+                       
 			$actName=CUrlMgr::getInstance()->getAction();
 			$conName = $this->controllers."\\".$conName;
+			
+                        
 			$controller = new $conName;  
 			
 			if(!method_exists ($controller, $actName))
 			{
 				throw new CSPPException('can not find '.$actName.'() in class '.$conName,CError::ERR_NOT_FOUND_METHOD);
 			}
-
+                        
 			$next = $controller->before();
 			
 			if($next)
 			{
+                            
 				$method = new \ReflectionMethod($conName, $actName);
-				$method->invokeArgs($controller, CUrlMgr::getInstance()->getParams());
+				$method->invokeArgs($controller, CUrlMgr::getInstance()->getUrlParams());
 			}
 			
 			$controller->after();
@@ -105,13 +112,17 @@ class CSpp
 
 class CController
 {
-	public $data = array();
 	public function before(){ return true; }
 	public function after(){}
+	protected $logger = null;
 	
-	public function render($template)
+	public function __construct() {
+		$this->logger = CSpp::getInstance()->getLogger();
+	}
+	
+	static public function renderHtml($template,$data)
 	{
-		extract($this->data);
+		extract($data);
 		
 		try
 		{
@@ -122,6 +133,7 @@ class CController
 			else
 			{
 				include($template);
+				
 			}
 		}
 		catch (Exception $e)
@@ -129,6 +141,64 @@ class CController
 			throw $e;
 		}
 	}
+	
+	static public function renderJson($data) {
+		echo CUtils::json_encode($data);
+	}
+	
+	
+	public static function getQueryDe($key,$default) {
+		if(isset($_GET[$key])) {
+			return $_GET[$key];
+		}
+		return $default;
+	}
+	
+	public static function getPostDe($key,$default) {
+		if(isset($_POST[$key])) {
+			return $_POST[$key];
+		}
+		return $default;
+	}
+	
+	public static function getCookieDe($key,$default) {
+		if(isset($_POST[$key])) {
+			return $_POST[$key];
+		}
+		return $default;
+	}
+	
+	public static function getRequestDe($key,$default) {
+		if(isset($_REQUEST[$key])) {
+			return $_REQUEST[$key];
+		}
+		return $default;
+	}
+	
+	public static function getQuery($key) {
+		return $_GET[$key];
+	}
+	
+	public static function getPost($key) {
+		return $_POST[$key];
+	}
+	
+	public static function getCookie($key) {
+		return $_POST[$key];
+	}
+	
+	public static function getRequest($key) {
+		return $_REQUEST[$key];
+	}
+	
+	public static function getParam($index) {
+		return CUrlMgr::getInstance()->getUrlParam($index);
+	}
+	
+	public static function setCookie($name,$value,$expire = 0,$path = "",$domain = "") {
+		return setcookie($name, $value, $expire, $path, $domain);
+	}
+
 }
 
 
@@ -148,6 +218,8 @@ class CRuntime
 		
 		ini_set('date.timezone',  \Config::$timezone);
 		
+		set_error_handler('spp\base\CRuntime::errorHandler',\Config::$error['level']);
+		
 		$path[] = SPP_PATH;
 		$path[] = APP_PATH;
 	
@@ -156,6 +228,14 @@ class CRuntime
 		spl_autoload_register(array('spp\base\CRuntime', 'loadClass'));
 	}
 	
+	public static function errorHandler($errno ,  $errstr ,  $errfile ,  $errline ) {
+		
+		if(error_reporting() == 0) return;
+		
+		throw new CSPPException($errstr,0,$errno,$errfile,$errline);
+	}
+
+
 	public static function loadClass($class)
 	{
 		$path = str_replace('\\', '/', $class);
@@ -178,8 +258,7 @@ class CUrlMgr
 	private static $instance = null;
 	
 	private function __construct(){}
-	
-	
+
 	public static function getInstance()
 	{
 		if(self::$instance == null)
@@ -187,7 +266,6 @@ class CUrlMgr
 		return self::$instance;
 	}
 	
-
 	public function init()
 	{
 		$this->pathInfo[0]='index';
@@ -207,15 +285,20 @@ class CUrlMgr
 		}
 		else
 		{
-
 			$pathUri =substr($_SERVER['REQUEST_URI'],strlen(dirname($_SERVER["SCRIPT_NAME"])));
 		}
+		
 		if(strlen($pathUri) > 0)
 		{
 			if($pathUri[0] == '/')
 				$pathUri=substr($pathUri, 1);
 				
 			$pathArray =explode('?',$pathUri);
+			
+			if($pathArray[0] == '' && $_GET['r'] != '')
+			{
+			    $pathArray[0] = $_GET['r'];
+			}
 			
 			if(\Config::$urls['/'.$pathArray[0]] != null)
 			{
@@ -226,6 +309,7 @@ class CUrlMgr
 			{
 				$this->pathInfo=explode('/',  $pathArray[0]);
 			}
+
 		}
 		else
 		{
@@ -237,7 +321,7 @@ class CUrlMgr
 		}
 	}
 	
-	public function getParam($index)
+	public function getUrlParam($index)
 	{
 		if(count($this->pathInfo) < 3+$index)
 		{
@@ -249,8 +333,10 @@ class CUrlMgr
 		}
 	}
 	
-	public function getParams()
+	public function getUrlParams()
 	{
+            
+           
 		if(count($this->pathInfo) > 2)
 		{
 			return array_slice($this->pathInfo, 2);

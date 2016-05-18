@@ -189,6 +189,42 @@ class CMongoMapper implements CMapper
 		return $rows;
 	}
 	
+	public function findOne($columns = []) {
+		if($this->mongo == null){
+			throw new CModelException("mongo is null");
+		}
+		$collection = $this->collection;
+	
+		$obj = null;
+
+		if($this->count!=0 && $this->offset != 0)
+		{
+			$obj = $this->mongo->$collection->findOne($this->condition,$columns)->sort($this->order)->limit($this->count)->skip($this->offset);
+		}
+		else if($this->count !=0 && $this->offset == 0)
+		{
+			$obj = $this->mongo->$collection->findOne($this->condition,$columns)->sort($this->order)->limit($this->count);
+		}
+		else if($this->count ==0 && $this->offset != 0)
+		{
+			$obj = $this->mongo->$collection->findOne($this->condition,$columns)->sort($this->order)->skip($this->offset);
+		}
+		else
+		{
+			$obj = $this->mongo->$collection->findOne($this->condition,$columns)->sort($this->order);
+		}
+		
+		$obj = (Object) $obj;
+		
+		$this->condition = [];
+		$this->order = [];
+		$this->count = 0;
+		$this->offset = 0;
+		
+		return $obj;
+	}
+
+
 	public function count()
 	{
 		if($this->mongo == null){
@@ -200,6 +236,32 @@ class CMongoMapper implements CMapper
 		return $this->mongo->$collection->find($this->condition)->count();
 	}
 	
+	public function min($column)
+	{
+		$obj = $this->orderBy($column,'asc')->findOne([$column]);
+		if($obj == null)
+		{
+			return null;
+		}
+		else
+		{
+			return $obj->$column;
+		}
+	}
+	
+	public function max($column)
+	{
+		$obj = $this->orderBy($column)->findOne([$column]);
+		if($obj == null)
+		{
+			return null;
+		}
+		else
+		{
+			return $obj->$column;
+		}
+	}
+	
 	public function distinct($column)
 	{
 		if($this->mongo == null){
@@ -207,7 +269,7 @@ class CMongoMapper implements CMapper
 		}
 		
 		$collection = $this->collection;
-		return $this->mongo->$collection->distinct($column);
+		return $this->mongo->$collection->distinct($column,  $this->condition);
 	}
 	
 	
