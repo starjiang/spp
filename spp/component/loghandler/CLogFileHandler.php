@@ -12,7 +12,8 @@ class CLogFileHandler implements ILogHandler
 	
 	public function write($msg)
 	{
-		file_put_contents($this->file, $msg, FILE_APPEND|LOCK_EX);		
+		file_put_contents($this->file, $msg, FILE_APPEND|LOCK_EX);	
+		@chmod($this->file, 0777);
 	}
 	
 	public function __destruct()

@@ -6,7 +6,7 @@ use spp\model\CMapper;
 class CMongoMapper implements CMapper
 {
 	static $op = ['>'=>'$gt','>='=>'$gte','<'=>'$lt','<='=>'$lte',
-		'='=>'=','like'=>'like','in'=>'$in','not in'=>'$nin'
+		'='=>'=','!='=>'$ne','like'=>'like','in'=>'$in','not in'=>'$nin'
 	];
 	private static $instances = array();
 	private $collection = null;
@@ -235,7 +235,16 @@ class CMongoMapper implements CMapper
 		
 		return $this->mongo->$collection->find($this->condition)->count();
 	}
-	
+
+	public function sum($column)
+	{
+		if($this->mongo == null){
+			throw new CModelException("mongo is null");
+		}
+		return 0;	
+	}
+
+
 	public function min($column)
 	{
 		$obj = $this->orderBy($column,'asc')->findOne([$column]);
@@ -320,6 +329,7 @@ class CMongoMapper implements CMapper
 	
 	public function updateByPk($obj)
 	{
+		$obj = (Object)$obj;
 		$pk = $this->pk;
 		if($obj->$pk == 0 || $obj->$pk == '')
 		{
@@ -328,22 +338,38 @@ class CMongoMapper implements CMapper
 		$this->where($pk,'=',$obj->$pk)->update($obj);
 	}
 	
-	public function save($obj)
+	public function saveByPk($obj)
 	{
+		$obj = (Object)$obj;
 		$pk = $this->pk;
 		
 		if($obj->$pk == 0 || $obj->$pk == '')
 		{
 			throw new CModelException("primary key is empty");			
 		}
-		$preObj = $this->findByPk($obj->$pk);		
-		if($preObj == false)
+		$count = $this->where($pk,'=',$obj->$pk)->count();		
+		if($count == 0)
 		{
 			$this->insert($obj);
 		}
 		else
 		{
 			$this->where($pk,'=',$obj->$pk)->update($obj);
+		}
+	}
+	
+	public function save($obj) {
+		$obj = (Object)$obj;
+		$where = $this->condition;
+		$count = $this->count();
+		if($count > 1) {
+			throw new CModelException("save only affect one record");
+		}
+		if ($count == 0) {
+			$this->insert($obj);
+		} else {
+			$this->condition = $where;
+			$this->update($obj);
 		}
 	}
 	

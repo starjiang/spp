@@ -27,7 +27,7 @@ class CSpp
 	public function init()
 	{
 
-		CRuntime::init(); 
+		CRuntime::init();
 
 		if(isset(\Config::$log) && isset(\Config::$log['path']) && isset(\Config::$log['level']))
 		{
@@ -53,24 +53,21 @@ class CSpp
                        
 			$actName=CUrlMgr::getInstance()->getAction();
 			$conName = $this->controllers."\\".$conName;
-			
-                        
-			$controller = new $conName;  
-			
-			if(!method_exists ($controller, $actName))
-			{
+
+			$controller = new $conName;
+
+			if (!method_exists ($controller, $actName)) {
 				throw new CSPPException('can not find '.$actName.'() in class '.$conName,CError::ERR_NOT_FOUND_METHOD);
 			}
-                        
+
 			$next = $controller->before();
-			
-			if($next)
-			{
-                            
+
+			if ($next) {
+
 				$method = new \ReflectionMethod($conName, $actName);
 				$method->invokeArgs($controller, CUrlMgr::getInstance()->getUrlParams());
 			}
-			
+
 			$controller->after();
 		}
 		catch(\Exception $e)
@@ -119,7 +116,6 @@ class CController
 	public function __construct() {
 		$this->logger = CSpp::getInstance()->getLogger();
 	}
-	
 	static public function renderHtml($template,$data)
 	{
 		extract($data);
@@ -172,6 +168,11 @@ class CController
 		if(isset($_REQUEST[$key])) {
 			return $_REQUEST[$key];
 		}
+		
+		if(isset($_COOKIE[$key])) {
+			return $_COOKIE[$key];
+		}
+		
 		return $default;
 	}
 	
@@ -188,7 +189,11 @@ class CController
 	}
 	
 	public static function getRequest($key) {
-		return $_REQUEST[$key];
+		$val = $_REQUEST[$key];
+		if($val == null) {
+			$val =  $_COOKIE[$key];
+		}
+		return $val;
 	}
 	
 	public static function getParam($index) {
@@ -229,7 +234,6 @@ class CRuntime
 	}
 	
 	public static function errorHandler($errno ,  $errstr ,  $errfile ,  $errline ) {
-		
 		if(error_reporting() == 0) return;
 		
 		throw new CSPPException($errstr,0,$errno,$errfile,$errline);
@@ -238,8 +242,10 @@ class CRuntime
 
 	public static function loadClass($class)
 	{
+		//var_dump($class);
 		$path = str_replace('\\', '/', $class);
 		$path.='.php';
+		
 		include($path);
 		if(!class_exists($class) && !interface_exists($class))
 		{

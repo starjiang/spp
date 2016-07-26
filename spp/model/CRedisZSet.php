@@ -42,7 +42,7 @@ class CRedisZSet
 	}
 	public function remove($member)
 	{
-		$this->redis->zDelete($member);
+		$this->redis->zDelete($this->prefix,$member);
 	}
 	public function getByOffset($start,$end,$order='desc')
 	{

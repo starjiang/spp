@@ -23,4 +23,5 @@ class CUtils
 	{
 		return self::json_decode($str);
 	}
+
 }

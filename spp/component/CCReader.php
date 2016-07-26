@@ -13,17 +13,18 @@ class CCReader
 	
 	public static function init($shmMKey,$shmSKey)
 	{
-		
+
 		if(CCReader::$shmMHashMap === null && CCReader::$shmSHashMap === null )
 		{
 			CCReader::$shmSKey = $shmSKey;
 			CCReader::$shmMKey = $shmMKey;
-			
+
 			CCReader::$shmMHashMap = new CShmHashMap();
+
 			if(!CCReader::$shmMHashMap->attach($shmMKey))
 			{
 				CCReader::$shmMHashMap = null;
-				
+
 				return CCReader::inits($shmSKey);
 			}
 			else
@@ -77,7 +78,8 @@ class CCReader
 		}
 		return true;
 
-	}	
+	}
+	
 	public static function get($key)
 	{
 		if(CCReader::$shmMHashMap != null)

@@ -13,7 +13,13 @@ class CLog
 		$this->handler = $handler;
 		$this->level = $level;
 	}
-	
+	private static function getCalledInfo(){
+		$debugs = debug_backtrace(false,4);
+		$info='['. $debugs[3]['class'].'::'.$debugs[3]['function'].']';
+		$info.='[line:'. $debugs[2]['line'].'] ';
+		return $info;
+	}
+
 	public function debug($msg)
 	{
 		$this->write(1, $msg);
@@ -33,7 +39,7 @@ class CLog
 	{
 		$this->write(2, $msg);
 	}
-	
+
 	private function getLevelStr($level)
 	{
 		switch ($level)
@@ -59,7 +65,8 @@ class CLog
 	{
 		if(($level & $this->level) == $level )
 		{
-			$msg = '['.date('Y-m-d H:i:s').']['.$this->getLevelStr($level).'] '.$msg."\n";
+			$callInfo = static::getCalledInfo();
+			$msg = '['.date('Y-m-d H:i:s').']['.$this->getLevelStr($level).']'.$callInfo.$msg."\n";
 			$this->handler->write($msg);
 		}
 	}
