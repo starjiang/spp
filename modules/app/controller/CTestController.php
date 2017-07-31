@@ -11,22 +11,24 @@ use spp\model\CRedisZSet;
 use spp\model\CRedisHash;
 class CTestController extends CBaseController
 {
+    //test/index
 	public function indexAction()
 	{
-		echo microtime()."<br/>";
-		$keys = CCReader::get('cfg.services.users');
-		var_dump(CCReader::mget($keys));
-		$keys = CCReader::get('cfg.services.users');
-		var_dump(CCReader::mget($keys));
-		$keys = CCReader::get('cfg.services.users');
-		var_dump(CCReader::mget($keys));
-		$keys = CCReader::get('cfg.services.users');
-		var_dump(CCReader::mget($keys));
-		echo microtime()."<br>";
+
+//		$keys = CCReader::get('cfg.services.users');
+//		var_dump(CCReader::mget($keys));
+//		$keys = CCReader::get('cfg.services.users');
+//		var_dump(CCReader::mget($keys));
+//		$keys = CCReader::get('cfg.services.users');
+//		var_dump(CCReader::mget($keys));
+//		$keys = CCReader::get('cfg.services.users');
+//		var_dump(CCReader::mget($keys));
+
 		CSpp::getInstance()->getLogger()->debug('indexAction called');
+        
 		$user = CDbMapper::getInstance("user")->findByPk(2,['id','name','email']);
 		$this->data['user']= $user;
-		$this->render('index/index.html');
+		$this->renderHtml('index/index.html', $this->data);
 		
 	}
 	

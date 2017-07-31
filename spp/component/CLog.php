@@ -1,6 +1,5 @@
 <?php
 namespace spp\component;
-
 class CLog
 {
 	private $handler = null;
