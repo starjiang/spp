@@ -24,12 +24,13 @@ demo app 目录说明：
 * modules/模块名/controller 控制器目录
 * modules/模块名/model 数据模型
 
-
-框架介绍
+路由说明
 ===
-* 见doc/introduce.ppt
+* app/index/get_user
+* app为模块名
+* index 为controller 名，对应controller 为CIndexController
+* get_user 为action 名，对应 getUserAction()
 
-框架命名规范t
+注意点
 ===
-*  [doc/spp框架命名规范.txt]
-*  https://github.com/starjiang/spp/blob/master/doc/spp%E6%A1%86%E6%9E%B6%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83.txt
+* CMongoMapper 目前处于测试阶段,慎用
