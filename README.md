@@ -16,13 +16,14 @@ Spp  PHP MVC框架。轻量，简洁，使用方便，扩展容易，model层支
 
 demo app 目录说明：
 ===
-* app/public目录为网站根目录
-* app/gconfig 配置中心配置文件
-* app/config 框架配置
-* app/script 业务常用的一些脚本，比如配置数据加载脚本
-* app/controller 控制器目录
-* app/model 数据模型
-* app/template 视图模版目录
+* web/public目录为网站根目录web/public/index.php 入口文件
+* config 框架配置文件
+* script 业务常用的一些脚本，比如配置数据加载脚本
+* template 视图模版目录
+* logs 系统日志目录，必须配置写权限
+* modules/模块名/controller 控制器目录
+* modules/模块名/model 数据模型
+
 
 框架介绍
 ===
