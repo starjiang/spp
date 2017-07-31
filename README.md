@@ -31,6 +31,14 @@ demo app 目录说明：
 * index 为controller 名，对应controller 为CIndexController
 * get_user 为action 名，对应 getUserAction()
 
+例子安装说明
+===
+* 按照 doc/nginx_rewrite.txt 配置 url rewrite
+* 导入 doc/test.sql 到mysql 
+* 配置 nginx htdocs 目录到 web/public 目录
+* 项目目录下 新建 logs 目录，chmod 777 logs
+* http://domian/ 访问
+
 注意点
 ===
 * CMongoMapper 目前处于测试阶段,慎用
