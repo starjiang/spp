@@ -335,30 +335,6 @@ class CUrlMgr
                 }
             }
         }
-          /*
-         * 
-         * @auth sunchangzhi
-         * @date 2016-10-24 13:50
-         * @notes sunny
-         */
-        /************************************begin**************************************/
-        $module=[];
-        foreach ($this->pathInfo as $key => $value) {
-            if(is_dir(BASE_PATH.'modules/'.implode('/', $module).'/'.$value)){
-                $module[]=$value;
-            }
-            else{
-                $newController=$value;
-                $newAction= $this->pathInfo[$key+1];
-                $newPath[]= implode('\\', $module);
-                $newPath[]= $newController;
-                $newPath[]=$newAction;  
-                $this->pathInfo=$newPath;
-                 break;
-            }
-    
-        }
-        /************************************end**************************************/
     }
 
     private static function toCamel($str, $class = false)

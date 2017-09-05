@@ -23,6 +23,11 @@ class CDbMapper implements CMapper
     private $update = '';
     private $needLeftBracketNum = 0;
 
+    /**
+     * 
+     * @param string $table mysql table name
+     * @param string $pk mysql table primary key
+     */
     protected function __construct($table, $pk = 'id')
     {
         $this->table = "`" . $table . "`";
@@ -32,17 +37,31 @@ class CDbMapper implements CMapper
         }
     }
 
+    /**
+     * 
+     * @return new Object
+     */
     public static function newInstance()
     {
         $caller = get_called_class();
         return new $caller();
     }
 
+    /**
+     * get last query string
+     * @return string 
+     */
     public static function getLastQuery()
     {
         return self::$lastQuery;
     }
 
+    /**
+     * commit trasaction
+     * @param object $pdo 
+     * @return 
+     * @throws CModelException
+     */
     public static function commit($pdo = null)
     {
         if ($pdo == null) {
@@ -54,6 +73,12 @@ class CDbMapper implements CMapper
         return $pdo->commit();
     }
 
+    /**
+     * rollback trasaction
+     * @param Object $pdo
+     * @return type
+     * @throws CModelException
+     */
     public static function rollBack($pdo = null)
     {
         if ($pdo == null) {
@@ -65,6 +90,12 @@ class CDbMapper implements CMapper
         return $pdo->rollBack();
     }
 
+    /**
+     * start trasaction
+     * @param Object $pdo
+     * @return type
+     * @throws CModelException
+     */
     public static function beginTransaction($pdo = null)
     {
         if ($pdo == null) {
@@ -90,6 +121,12 @@ class CDbMapper implements CMapper
         return false;
     }
 
+    /**
+     * get a Dao instance by table name and primary key
+     * @param string $table
+     * @param string $pk
+     * @return dao instance
+     */
     public static function getInstance($table, $pk = 'id')
     {
         $key = $table . "." . $pk;
@@ -99,11 +136,22 @@ class CDbMapper implements CMapper
         return self::$instances[$key];
     }
 
+    /**
+     * set another pdo for dbmapper
+     * @param Object $pdo
+     */
     function setPdo($pdo)
     {
         $this->pdo = $pdo;
     }
 
+    /**
+     * get data by primary key from mysql
+     * @param string $id
+     * @param array $columns
+     * @return data list
+     * @throws CModelException
+     */
     public function findByPk($id, $columns = ['*'])
     {
         if ($this->pdo == null) {
@@ -113,6 +161,16 @@ class CDbMapper implements CMapper
         return $this->where($this->pk, '=', $id)->findOne($columns);
     }
 
+    /**
+     * add sql where condition
+     * where('type','=','sports')->where('age','=',30)
+     * @param string $column
+     * @param string $op
+     * @param mixed $value
+     * @param string $bool
+     * @return $this
+     * @throws CModelException
+     */
     public function where($column, $op, $value, $bool = 'and')
     {
         if (!self::checkOperater($op) || !self::checkBoolean($bool)) {
@@ -145,6 +203,13 @@ class CDbMapper implements CMapper
         return $this;
     }
 
+    /**
+     * add sql raw where condition
+     * whereRaw('age > 100')
+     * @param string $expr
+     * @param string $bool
+     * @return $this
+     */
     public function whereRaw($expr, $bool = 'and')
     {
         if ($this->condition == '') {
@@ -170,36 +235,55 @@ class CDbMapper implements CMapper
         return $this;
     }
 
+    /**
+     * add "(" for sql
+     * @return $this
+     */
     public function addLeft()
     {
         $this->needLeftBracketNum++;
         return $this;
     }
-
+    /**
+     * add ")" for sql
+     * @return $this
+     */
     public function addRight()
     {
         $this->condition .= ')';
         return $this;
     }
 
+    /**
+     * limit count
+     * @param int $count need count
+     * @param int $offset offset
+     * @return $this
+     */
     public function limit($count, $offset = 0)
     {
         $this->limit = " limit $offset,$count";
         return $this;
     }
 
-    public function updateLimit($count){
-        $this->limit = " limit $count";
-        return $this;
-    }
-
-    public function groupBy($field)
+    /**
+     * group by $column
+     * @param string $column
+     * @return $this
+     */
+    public function groupBy($column)
     {
-        $this->group = " group by $field";
+        $this->group = " group by $column";
         return $this;
     }
 
-    public function orderBy($column, $order = 'desc', $rand = false)
+    /**
+     * order by column desc or asc
+     * @param string $column
+     * @param string $order
+     * @return $this
+     */
+    public function orderBy($column, $order = 'desc')
     {
         if ($this->order == '') {
             $this->order = " order by `$column` $order";
@@ -210,6 +294,12 @@ class CDbMapper implements CMapper
         return $this;
     }
 
+    /**
+     * order by field
+     * @param string $field
+     * @param string $fieldValue
+     * @return $this
+     */
     public function orderByField($field, $fieldValue)
     {
         $this->order = " order by field( $field ," . implode(',',$fieldValue) . ")";
@@ -233,11 +323,23 @@ class CDbMapper implements CMapper
         $this->update = '';
     }
 
+    /**
+     * get one data from mysql
+     * where('age','>',30)->findOne(['name,age,birth']);
+     * @param array $columns
+     * @return data object
+     * @throws CModelException
+     */
     public function findOne($columns = ['*'])
     {
         if ($this->pdo == null) {
             throw new CModelException("pdo is null");
         }
+        
+        if (!is_array($columns) || count($columns) == 0) {
+            throw new CModelException("param columns is not a array or array is empty");
+        }
+        
         $this->limit(1);
         self::$lastQuery = '';
         $query = 'select ' . $this->getSelectList($columns) . ' from ' . $this->table . $this->condition . $this->group . $this->order . $this->limit;
@@ -249,11 +351,23 @@ class CDbMapper implements CMapper
         return $obj;
     }
 
+    /**
+     * get data list by condition
+     * where('age','>',30)->find(['name,age,birth']);
+     * @param array $columns
+     * @return data list objects
+     * @throws CModelException
+     */
     public function find($columns = ['*'])
     {
         if ($this->pdo == null) {
             throw new CModelException("pdo is null");
         }
+        
+        if (!is_array($columns) || count($columns) == 0) {
+            throw new CModelException("param columns is not a array or array is empty");
+        }
+        
         self::$lastQuery = '';
         $query = 'select ' . $this->getSelectList($columns) . ' from ' . $this->table . $this->condition . $this->group . $this->order . $this->limit;
         self::$lastQuery = $query;
@@ -264,6 +378,12 @@ class CDbMapper implements CMapper
         return $objs;
     }
 
+    /**
+     * count by contion
+     * where('field','>',100)->count();
+     * @return int the count
+     * @throws CModelException
+     */
     public function count()
     {
         if ($this->pdo == null) {
@@ -280,6 +400,12 @@ class CDbMapper implements CMapper
         return $obj->total;
     }
 
+    /**
+     * sum by condition
+     * @param string $column
+     * @return int sum the coluun
+     * @throws CModelException
+     */
     public function sum($column)
     {
         if ($this->pdo == null) {
@@ -296,7 +422,12 @@ class CDbMapper implements CMapper
         return $obj->total;
     }
 
-
+    /**
+     * get max by condition
+     * @param string $column
+     * @return int max the column
+     * @throws CModelException
+     */
     public function max($column)
     {
         if ($this->pdo == null) {
@@ -352,10 +483,18 @@ class CDbMapper implements CMapper
         return $list;
     }
 
+    /**
+     * whereIn('field',[1,3,4]);
+     * @param string $column
+     * @param array $values
+     * @param string $bool
+     * @return $this
+     * @throws CModelException
+     */
     public function whereIn($column, $values, $bool = 'and')
     {
-        if (!is_array($values) && count($values)) {
-            throw new CModelException("param values is not a array");
+        if (!is_array($values) || count($values) == 0) {
+            throw new CModelException("param values is not a array or array is empty");
         }
         if ($this->condition == '') {
             $this->condition = ' where ';
@@ -382,8 +521,8 @@ class CDbMapper implements CMapper
 
     public function whereNotIn($column, $values, $bool = 'and')
     {
-        if (!is_array($values) && count($values)) {
-            throw new CModelException("param values is not a array");
+        if (!is_array($values) || count($values)== 0) {
+            throw new CModelException("param values is not a array or array is empty");
         }
         if ($this->condition == '') {
             $this->condition = ' where ';
@@ -408,6 +547,12 @@ class CDbMapper implements CMapper
         return $this;
     }
 
+    /**
+     * insert obj into mysql
+     * @param Object $obj
+     * @return lastInsertId
+     * @throws CModelException
+     */
     public function insert($obj)
     {
         if ($this->pdo == null) {
@@ -422,6 +567,11 @@ class CDbMapper implements CMapper
         return $this->pdo->lastInsertId();
     }
 
+    /**
+     * set update raw expression
+     * @param string $expr
+     * @return $this
+     */
     public function setRaw($expr)
     {
         if ($this->update == '') {
@@ -433,6 +583,13 @@ class CDbMapper implements CMapper
         return $this;
     }
 
+    /**
+     * update the obj into mysql
+     * where('id','=',100)->update($obj);
+     * @param Object $obj
+     * @return affect rows
+     * @throws CModelException
+     */
     public function update($obj = [])
     {
         if ($this->pdo == null) {
@@ -458,6 +615,12 @@ class CDbMapper implements CMapper
         return $sth->rowCount();
     }
 
+    /**
+     * update object into mysql by pk,obj need have to pk field
+     * @param Object $obj
+     * @return affect rows
+     * @throws CModelException
+     */
     public function updateByPk($obj)
     {
         $obj = (Object)$obj;
@@ -470,6 +633,12 @@ class CDbMapper implements CMapper
         return $this->where($pk, '=', $obj->$pk)->update($obj);
     }
 
+    /**
+     * save data into mysql,obj need have the pk field
+     * @param Object $obj
+     * @return affect rows
+     * @throws CModelException
+     */
     public function saveByPk($obj)
     {
         $obj = (Object)$obj;
@@ -490,6 +659,11 @@ class CDbMapper implements CMapper
         return $this->where($this->pk, '=', $id)->delete();
     }
 
+    /**
+     * delete data from mysql by condition
+     * @return affect rows
+     * @throws CModelException
+     */
     public function delete()
     {
         if ($this->pdo == null) {
@@ -564,6 +738,12 @@ class CDbMapper implements CMapper
         return $list;
     }
 
+     /**
+     * save data into mysql
+     * @param Object $obj
+     * @return affect rows
+     * @throws CModelException
+     */
     public function save($obj)
     {
         $obj = (Object)$obj;

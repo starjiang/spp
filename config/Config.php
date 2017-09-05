@@ -18,7 +18,7 @@ class Config
 	public static $db = [
 		'dsn'=>'mysql:host=127.0.0.1;port=3306;dbname=test',
 		'user'=>'root',
-		'pwd'=>'',
+		'pwd'=>'msconfig',
 		'options'=>[PDO::MYSQL_ATTR_INIT_COMMAND => 'set names utf8',PDO::ATTR_TIMEOUT=>1000,PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]
 	];
 	

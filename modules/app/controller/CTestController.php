@@ -27,8 +27,9 @@ class CTestController extends CBaseController
 		CSpp::getInstance()->getLogger()->debug('indexAction called');
         
 		$user = CDbMapper::getInstance("user")->findByPk(2,['id','name','email']);
-		$this->data['user']= $user;
-		$this->renderHtml('index/index.html', $this->data);
+        
+		$data['user']= $user;
+		$this->renderHtml('index/index.html', $data);
 		
 	}
 	
